@@ -28,6 +28,8 @@
   window._sb = _supabase;
 </script>
 
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- EmailJS -->
@@ -642,7 +644,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     <div class="divider" style="margin:16px 0"></div>
 
     <!-- Incidents -->
-    <div style="margin-bottom:80px">
+    <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:8px">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
@@ -651,6 +653,20 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         <button onclick="openIncidentModal()" style="padding:6px 12px;background:var(--red);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
       </div>
       <div id="project-incidents-list"></div>
+    </div>
+
+    <div class="divider" style="margin:16px 0"></div>
+
+    <!-- WPS Documents -->
+    <div style="margin-bottom:80px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#1a7a4a"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-wps">WPS Documents</span>
+        </div>
+        <button onclick="showPage('wps')" style="padding:6px 12px;background:#1a7a4a;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px" id="t-open-wps">OPEN FOLDER →</button>
+      </div>
+      <div id="project-wps-preview"></div>
     </div>
   </div>
 
@@ -901,7 +917,73 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     </button>
   </div>
 
-  <!-- SETTINGS PAGE -->
+  <!-- WPS PAGE -->
+  <div id="page-wps" class="main-content" style="display:none">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn-back" onclick="showPage('rams')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div>
+          <h1 id="t-wps-title">WPS Documents</h1>
+          <p id="wps-project-sub" style="font-size:12px;color:var(--gray)"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share link card -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy)" id="t-wps-share-title">Public Share Link</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:2px" id="t-wps-share-desc">External users can view and download WPS files</div>
+          </div>
+          <label style="position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0">
+            <input type="checkbox" id="wps-active-toggle" onchange="toggleWPSLink(this.checked)" style="opacity:0;width:0;height:0">
+            <span id="wps-toggle-track" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--gray-light);border-radius:24px;transition:.3s">
+              <span id="wps-toggle-thumb" style="position:absolute;content:'';height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></span>
+            </span>
+          </label>
+        </div>
+        <div id="wps-link-box" style="background:var(--off-white);border-radius:var(--radius);padding:10px 12px;display:flex;align-items:center;gap:8px">
+          <input type="text" id="wps-share-url" readonly style="flex:1;border:none;background:transparent;font-size:12px;color:var(--gray-dark);font-family:monospace">
+          <button onclick="copyWPSLink()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer" id="t-copy-link">Copy</button>
+        </div>
+        <!-- QR Code -->
+        <div id="wps-qr-container" style="text-align:center;margin-top:14px;display:none">
+          <div id="wps-qr-code" style="display:inline-block;padding:12px;background:white;border-radius:var(--radius);box-shadow:var(--shadow)"></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:6px" id="t-qr-scan">Scan to open WPS folder</div>
+          <button onclick="downloadQR()" style="margin-top:8px;padding:7px 16px;background:var(--off-white);color:var(--navy);border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer" id="t-download-qr">Download QR Code</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload button (admin/superuser only) -->
+    <div id="wps-upload-section" style="margin-bottom:14px">
+      <label style="display:block;width:100%;padding:13px;background:var(--navy);color:white;border-radius:var(--radius);text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:0.5px" id="t-upload-wps">
+        <input type="file" id="wps-file-input" accept=".pdf" multiple style="display:none" onchange="uploadWPSFiles(this)">
+        ↑ Upload PDF Files
+      </label>
+      <div id="wps-upload-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--gray-dark);text-align:center"></div>
+    </div>
+
+    <!-- Documents list -->
+    <div id="wps-docs-list"></div>
+  </div>
+
+  <!-- WPS PUBLIC PAGE (no login needed) -->
+  <div id="page-wps-public" class="main-content" style="display:none">
+    <div style="text-align:center;padding:20px 0 16px">
+      <img id="wps-public-logo" src="" style="height:50px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy);margin-top:8px" id="wps-public-project-name"></div>
+      <div style="font-size:13px;color:var(--gray)" id="wps-public-subtitle">WPS Documents</div>
+    </div>
+    <div id="wps-public-list" style="margin-bottom:40px"></div>
+    <div style="text-align:center;font-size:11px;color:var(--gray);padding:20px">Nicon Industries A/S · quality on time</div>
+  </div>
+
+    <!-- SETTINGS PAGE -->
   <div id="page-settings" class="main-content" style="display:none">
     <div class="page-header">
       <h1 id="t-settings-title">Settings</h1>
@@ -1508,6 +1590,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('hse-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('inc-date').value = new Date().toISOString().slice(0,16);
 
+  // Check for WPS public link
+  if (checkWPSToken()) return;
   // Init biometric button if available
   initLoginScreen();
 
@@ -1576,7 +1660,7 @@ function showScreen(name) {
 }
 
 function showPage(name) {
-  const pages = ['projects','rams','hse-form','incidents','settings','qhse','toolbox'];
+  const pages = ['projects','rams','hse-form','incidents','settings','qhse','toolbox','wps','wps-public'];
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = 'none';
@@ -1596,6 +1680,7 @@ function showPage(name) {
 
   if (name === 'incidents') loadIncidents();
   if (name === 'qhse') loadQHSEPage();
+  if (name === 'wps') showPage_wps();
   if (name === 'settings') { loadUsers(); applyRolePermissions(); updateBiometricSettings(); loadProfile(); }
 }
 
@@ -2667,6 +2752,229 @@ function removeBiometric() {
 }
 
 
+
+
+// ============================================================
+// WPS DOCUMENTS
+// ============================================================
+let currentWPSFolder = null;
+
+async function showPage_wps() {
+  document.getElementById('wps-project-sub').textContent = '#' + currentProject.project_no + ' · ' + (currentProject.name || '');
+  document.getElementById('wps-public-logo').src = LOGO_SRC;
+
+  // Load or create folder
+  try {
+    let { data: folder } = await _sb.from('wps_folders').select('*').eq('project_id', currentProject.id).single();
+    if (!folder) {
+      const { data: newFolder } = await _sb.from('wps_folders').insert({
+        project_id: currentProject.id,
+        project_no: currentProject.project_no,
+        is_active: true,
+        created_by: currentUser.email,
+      }).select().single();
+      folder = newFolder;
+    }
+    currentWPSFolder = folder;
+    updateWPSToggle(folder.is_active);
+    const shareUrl = buildWPSShareUrl(folder.share_token);
+    document.getElementById('wps-share-url').value = shareUrl;
+    // Generate QR
+    generateWPSQR(shareUrl, folder.is_active);
+    loadWPSDocs();
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+}
+
+function buildWPSShareUrl(token) {
+  const base = window.location.href.split('?')[0].split('#')[0];
+  return base + '?wps=' + token;
+}
+
+function updateWPSToggle(active) {
+  const toggle = document.getElementById('wps-active-toggle');
+  const track = document.getElementById('wps-toggle-track');
+  const thumb = document.getElementById('wps-toggle-thumb');
+  if (toggle) toggle.checked = active;
+  if (track) track.style.background = active ? 'var(--success)' : 'var(--gray-light)';
+  if (thumb) thumb.style.transform = active ? 'translateX(20px)' : 'translateX(0)';
+}
+
+function generateWPSQR(url, active) {
+  const container = document.getElementById('wps-qr-code');
+  const qrContainer = document.getElementById('wps-qr-container');
+  if (!container || !active) { if(qrContainer) qrContainer.style.display = 'none'; return; }
+  container.innerHTML = '';
+  try {
+    new QRCode(container, { text: url, width: 180, height: 180, colorDark: '#1a2744', colorLight: '#ffffff' });
+    qrContainer.style.display = 'block';
+  } catch(e) {}
+}
+
+async function toggleWPSLink(active) {
+  updateWPSToggle(active);
+  try {
+    await _sb.from('wps_folders').update({ is_active: active }).eq('id', currentWPSFolder.id);
+    currentWPSFolder.is_active = active;
+    generateWPSQR(document.getElementById('wps-share-url').value, active);
+    showToast(active ? 'Link activated' : 'Link deactivated', active ? 'success' : '');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+function copyWPSLink() {
+  const url = document.getElementById('wps-share-url').value;
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied!', 'success'));
+}
+
+function downloadQR() {
+  const canvas = document.querySelector('#wps-qr-code canvas');
+  if (!canvas) return;
+  const a = document.createElement('a');
+  a.download = 'WPS_QR_' + currentProject.project_no + '.png';
+  a.href = canvas.toDataURL();
+  a.click();
+}
+
+async function loadWPSDocs() {
+  const list = document.getElementById('wps-docs-list');
+  list.innerHTML = '<div class="loading" style="font-size:13px;padding:10px 0">Loading...</div>';
+  try {
+    const { data, error } = await _sb.from('wps_documents').select('*').eq('folder_id', currentWPSFolder.id).order('created_at', {ascending:false});
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--gray);text-align:center;padding:20px 0">No WPS documents yet. Upload PDF files above.</p>';
+      return;
+    }
+    list.innerHTML = data.map(doc => `
+      <div class="rams-item" style="cursor:default">
+        <div class="rams-icon" style="background:#1a7a4a">
+          <svg width="20" height="20" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+        </div>
+        <div class="rams-info" style="cursor:pointer" onclick="window.open('${doc.file_url}','_blank')">
+          <div class="rams-title">${doc.filename}</div>
+          <div class="rams-meta">${doc.uploaded_by || ''} · ${doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ''} · ${doc.file_size ? Math.round(doc.file_size/1024) + ' KB' : ''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="window.open('${doc.file_url}','_blank')" style="padding:6px 10px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer">View</button>
+          <button onclick="deleteWPSDoc('${doc.id}','${doc.storage_path}')" style="padding:6px 10px;background:#fde8ea;color:var(--red);border:none;border-radius:8px;font-size:12px;cursor:pointer">✕</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--red)">' + e.message + '</p>';
+  }
+}
+
+async function uploadWPSFiles(input) {
+  if (!input.files || input.files.length === 0) return;
+  const progress = document.getElementById('wps-upload-progress');
+  progress.style.display = 'block';
+  let uploaded = 0;
+  for (const file of input.files) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) { showToast('Only PDF files allowed', 'error'); continue; }
+    progress.textContent = 'Uploading ' + file.name + '...';
+    try {
+      const path = 'wps/' + currentProject.project_no + '/' + Date.now() + '_' + file.name;
+      const { error: upErr } = await _sb.storage.from('wps-documents').upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: urlData } = _sb.storage.from('wps-documents').getPublicUrl(path);
+      await _sb.from('wps_documents').insert({
+        folder_id: currentWPSFolder.id,
+        project_id: currentProject.id,
+        filename: file.name,
+        storage_path: path,
+        file_url: urlData.publicUrl,
+        file_size: file.size,
+        uploaded_by: currentUser.email,
+      });
+      uploaded++;
+    } catch(e) { showToast('Error uploading ' + file.name + ': ' + e.message, 'error'); }
+  }
+  progress.style.display = 'none';
+  input.value = '';
+  if (uploaded > 0) {
+    showToast(uploaded + ' file(s) uploaded!', 'success');
+    loadWPSDocs();
+    loadWPSPreview();
+  }
+}
+
+async function deleteWPSDoc(docId, storagePath) {
+  if (!confirm('Delete this document?')) return;
+  try {
+    await _sb.storage.from('wps-documents').remove([storagePath]);
+    await _sb.from('wps_documents').delete().eq('id', docId);
+    showToast('Deleted', 'success');
+    loadWPSDocs();
+    loadWPSPreview();
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function loadWPSPreview() {
+  const preview = document.getElementById('project-wps-preview');
+  if (!preview || !currentProject) return;
+  try {
+    const { data: folder } = await _sb.from('wps_folders').select('id,is_active').eq('project_id', currentProject.id).single();
+    if (!folder) { preview.innerHTML = '<p style="font-size:13px;color:var(--gray)">No WPS folder yet.</p>'; return; }
+    const { data: docs } = await _sb.from('wps_documents').select('id,filename').eq('folder_id', folder.id).order('created_at',{ascending:false}).limit(3);
+    const count = docs ? docs.length : 0;
+    preview.innerHTML = '<p style="font-size:13px;color:var(--gray-dark)">' + count + ' document(s) · Link: <span style="color:' + (folder.is_active ? 'var(--success)' : 'var(--red)') + ';font-weight:700">' + (folder.is_active ? 'Active' : 'Inactive') + '</span></p>';
+  } catch(e) { preview.innerHTML = ''; }
+}
+
+// ── PUBLIC WPS PAGE (no login) ────────────────────────────────────────────────
+async function loadPublicWPSPage(token) {
+  // Show public page immediately
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-app').classList.add('active');
+  const pages = ['projects','rams','hse-form','incidents','settings','qhse','toolbox','wps'];
+  pages.forEach(p => { const el = document.getElementById('page-' + p); if(el) el.style.display = 'none'; });
+  document.getElementById('page-wps-public').style.display = '';
+  document.querySelector('.bottom-nav').style.display = 'none';
+  document.getElementById('main-topbar').style.display = 'none';
+
+  const list = document.getElementById('wps-public-list');
+  list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray)">Loading...</div>';
+  document.getElementById('wps-public-logo').src = LOGO_SRC;
+
+  try {
+    const { data: folder, error } = await _sb.from('wps_folders').select('*').eq('share_token', token).single();
+    if (error || !folder) { list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Invalid or expired link.</div>'; return; }
+    if (!folder.is_active) { list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray)">This link has been deactivated.</div>'; return; }
+
+    // Get project name
+    const { data: proj } = await _sb.from('projects').select('project_no,name,client').eq('id', folder.project_id).single();
+    document.getElementById('wps-public-project-name').textContent = proj ? ('#' + proj.project_no + ' – ' + (proj.name || '')) : '';
+    document.getElementById('wps-public-subtitle').textContent = 'WPS Documents · ' + (proj?.client || '');
+
+    const { data: docs } = await _sb.from('wps_documents').select('*').eq('folder_id', folder.id).order('created_at',{ascending:false});
+    if (!docs || docs.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray)">No documents in this folder.</div>';
+      return;
+    }
+    list.innerHTML = docs.map(doc => `
+      <div style="background:white;border-radius:var(--radius);box-shadow:var(--shadow);margin:0 16px 10px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:10px;background:#1a7a4a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600;color:#1a2744">${doc.filename}</div>
+          <div style="font-size:12px;color:#9aa0b2;margin-top:2px">${doc.file_size ? Math.round(doc.file_size/1024) + ' KB' : ''} · ${doc.created_at ? new Date(doc.created_at).toLocaleDateString() : ''}</div>
+        </div>
+        <a href="${doc.file_url}" target="_blank" style="padding:8px 16px;background:#1a2744;color:white;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none">Open</a>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">' + e.message + '</div>';
+  }
+}
+
+// Check URL for WPS token on load
+function checkWPSToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('wps');
+  if (token) { loadPublicWPSPage(token); return true; }
+  return false;
+}
 
 // ============================================================
 // USER PROFILE
