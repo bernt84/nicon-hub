@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Nicon Industries – Nicon Hub</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1141,7 +1144,7 @@ const RISK_ACTIVITIES = [
 // ============================================================
 // AUTH
 // ============================================================
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   applyTranslations();
   loadConfig();
 
@@ -1152,7 +1155,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initLoginScreen();
 
   // Check existing session
-  _sb.auth.getSession().then(({ data: { session } }) => {
+  _sb.auth.getSession().then(async ({ data: { session } }) => {
     if (session) {
       currentUser = session.user;
       document.getElementById('settings-user-email').textContent = currentUser.email;
@@ -1165,7 +1168,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  _sb.auth.onAuthStateChange((event, session) => {
+  _sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user;
       document.getElementById('settings-user-email').textContent = currentUser.email;
@@ -1190,8 +1193,6 @@ async function doLogin() {
   btn.textContent = '...';
   btn.disabled = true;
 
-  const rememberMe = document.getElementById('remember-me')?.checked !== false;
-  _sb.auth.setSession !== undefined; // ensure client is ready
   const { error } = await _sb.auth.signInWithPassword({ email, password: pass });
   if (error) {
     let msg = 'Login failed. Check email and password.';
