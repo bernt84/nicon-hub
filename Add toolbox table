@@ -1,0 +1,17 @@
+create table toolbox_talks (
+  id uuid default gen_random_uuid() primary key,
+  project_id uuid references projects(id),
+  project_no text,
+  topic text,
+  talk_date text,
+  location text,
+  foreman text,
+  attendees integer default 0,
+  risks_discussed jsonb,
+  actions text,
+  created_by text,
+  created_at timestamptz default now()
+);
+
+alter table toolbox_talks enable row level security;
+create policy "auth users" on toolbox_talks for all using (auth.role() = 'authenticated');
