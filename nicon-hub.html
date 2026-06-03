@@ -622,7 +622,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
           <div style="width:8px;height:8px;border-radius:50%;background:var(--navy)"></div>
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-hse">HSE Plans</span>
         </div>
-        <button onclick="startNewHSE()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+
       </div>
       <div id="rams-list"></div>
     </div>
@@ -636,7 +636,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
           <div style="width:8px;height:8px;border-radius:50%;background:#c47a00"></div>
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-toolbox">Toolbox Talks</span>
         </div>
-        <button onclick="openNewToolboxModal()" style="padding:6px 12px;background:#c47a00;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+
       </div>
       <div id="project-toolbox-list"></div>
     </div>
@@ -650,7 +650,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
           <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-incidents">Incidents</span>
         </div>
-        <button onclick="openIncidentModal()" style="padding:6px 12px;background:var(--red);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+
       </div>
       <div id="project-incidents-list"></div>
     </div>
@@ -674,7 +674,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
   <div id="page-hse-form" class="main-content" style="display:none">
     <div class="page-header">
       <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn-back" onclick="showPage('rams')">
+        <button class="btn-back" onclick="showPage(hseOrigin || 'rams')">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div>
@@ -921,7 +921,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
   <div id="page-wps" class="main-content" style="display:none">
     <div class="page-header">
       <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn-back" onclick="showPage('rams')">
+        <button class="btn-back" onclick="showPage(hseOrigin || 'rams')">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div>
@@ -1021,6 +1021,27 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     </div>
 
     <div class="settings-section">
+      <h3 id="t-my-profile">My Profile</h3>
+      <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
+      <div class="field"><label id="t-profile-title">Title / Role</label>
+        <select id="profile-title" onchange="saveProfile()" style="-webkit-appearance:none;appearance:none">
+          <option value="">— Select title —</option>
+          <option value="Project Manager">Project Manager</option>
+          <option value="HSE Manager">HSE Manager</option>
+          <option value="Workshop Manager">Workshop Manager</option>
+          <option value="Project Engineer">Project Engineer</option>
+          <option value="Foreman">Foreman</option>
+          <option value="Welder">Welder</option>
+          <option value="Fitter">Fitter</option>
+          <option value="Painter">Painter</option>
+          <option value="Rigger">Rigger</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
+    </div>
+
+    <div class="settings-section">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <h3 id="t-signed-in-as">Signed in as</h3>
       </div>
@@ -1031,26 +1052,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         </div>
         <button class="btn-sm btn-danger" onclick="doLogout()" id="t-sign-out-btn">Sign Out</button>
       </div>
-      <div style="margin-top:14px">
-        <h4 style="font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px" id="t-my-profile">My Profile</h4>
-        <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
-        <div class="field"><label id="t-profile-title">Title / Role</label>
-          <select id="profile-title" onchange="saveProfile()">
-            <option value="">— Select title —</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="HSE Manager">HSE Manager</option>
-            <option value="Workshop Manager">Workshop Manager</option>
-            <option value="Project Engineer">Project Engineer</option>
-            <option value="Foreman">Foreman</option>
-            <option value="Welder">Welder</option>
-            <option value="Fitter">Fitter</option>
-            <option value="Painter">Painter</option>
-            <option value="Rigger">Rigger</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
-      </div>
+
       <div id="biometric-settings" style="margin-top:10px;display:none">
         <button class="btn-sm btn-navy" onclick="setupBiometric()" id="t-biometric-setup" style="width:100%;padding:11px">Enable Face ID / Fingerprint</button>
       </div>
@@ -1852,7 +1854,9 @@ async function loadRams() {
   }
 }
 
-function startNewHSE() {
+let hseOrigin = 'rams';
+function startNewHSE(origin) {
+  hseOrigin = origin || 'qhse';
   hseData = { ppe: {}, risks: {}, confirmations: {}, swa: undefined };
   document.getElementById('hse-project-no').value = currentProject.project_no || '';
   document.getElementById('hse-project-name').value = currentProject.name || '';
@@ -3094,9 +3098,10 @@ async function goToQHSESection() {
   if (!sel.value) { showToast('Select a project first', 'error'); return; }
   const { data } = await _sb.from('projects').select('*').eq('id', sel.value).single();
   if (data) currentProject = data;
-  if (selectedQHSEType === 'hse') { showPage('rams'); loadRams(); }
-  else if (selectedQHSEType === 'toolbox') { showPage('toolbox'); loadToolboxList(); }
-  else if (selectedQHSEType === 'incidents') { showPage('incidents'); loadIncidents(); }
+  // Go directly to new document form
+  if (selectedQHSEType === 'hse') { startNewHSE(); }
+  else if (selectedQHSEType === 'toolbox') { showPage('toolbox'); loadToolboxList(); openNewToolboxModal(); }
+  else if (selectedQHSEType === 'incidents') { showPage('incidents'); loadIncidents(); openIncidentModal(); }
 }
 
 // ============================================================
