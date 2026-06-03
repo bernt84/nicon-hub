@@ -399,6 +399,53 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
 .btn-cancel { background: var(--gray-light); color: var(--gray-dark); }
 
 
+
+/* ---- ACCORDION ---- */
+.acc-section {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden;
+}
+.acc-header {
+  padding: 14px 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.acc-header:active { background: var(--off-white); }
+.acc-header-left { display: flex; align-items: center; gap: 12px; }
+.acc-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--navy); color: white;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.acc-header span { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); letter-spacing: 0.3px; }
+.acc-arrow { color: var(--gray); transition: transform 0.25s; flex-shrink: 0; }
+.acc-arrow.open { transform: rotate(180deg); }
+.acc-body { padding: 0 16px 16px; }
+.acc-check {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--gray-light); transition: all 0.2s;
+}
+.acc-check.done { background: var(--success); border-color: var(--success); }
+.acc-check.done::after { content: '✓'; color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; height: 100%; }
+
+/* ---- CONFIRMATION ITEMS ---- */
+.confirm-item {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 11px 0; border-bottom: 1px solid var(--gray-light); gap: 10px;
+}
+.confirm-item:last-child { border-bottom: none; }
+.confirm-label { font-size: 13px; color: var(--navy); flex: 1; line-height: 1.4; }
+.confirm-label small { display: block; font-size: 11px; color: var(--gray); margin-top: 2px; }
+.confirm-toggle { display: flex; gap: 6px; flex-shrink: 0; }
+.confirm-btn {
+  padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--gray-light);
+  font-size: 12px; font-weight: 700; cursor: pointer; background: var(--white);
+  color: var(--gray-dark); transition: all 0.15s;
+}
+.confirm-btn.yes { border-color: var(--success); background: #e3f5ec; color: var(--success); }
+.confirm-btn.no { border-color: var(--red); background: #fde8ea; color: var(--red); }
+
 /* ---- ROLE BADGE ---- */
 .role-badge {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -558,123 +605,161 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         </button>
         <div>
           <h1 id="t-hse-form-title">HSE Plan</h1>
-          <p id="t-hse-form-sub" style="font-size:12px;color:var(--gray)">Fill in all sections</p>
+          <p id="t-hse-form-sub" style="font-size:12px;color:var(--gray)">QA-2.03.2</p>
         </div>
       </div>
     </div>
 
-    <div class="step-progress" id="step-progress"></div>
+    <!-- ACCORDION SECTIONS -->
 
-    <!-- SECTION 1: General Info -->
-    <div class="form-section" id="hse-step-1">
-      <div class="form-section-header" id="t-general-info">General Information</div>
-      <div class="form-section-body">
-        <div class="field">
-          <label id="t-project-no">Nicon Project No.</label>
-          <input type="text" id="hse-project-no" oninput="autoFillProject(this.value)">
+    <!-- S1: General Info -->
+    <div class="acc-section" id="acc-1">
+      <div class="acc-header" onclick="toggleAcc(1)">
+        <div class="acc-header-left">
+          <div class="acc-num">1</div>
+          <span id="t-acc-general">General Information</span>
         </div>
-        <div class="field">
-          <label id="t-project-name">Project Name</label>
-          <input type="text" id="hse-project-name">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-1"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="field">
-          <label id="t-client">Client</label>
-          <input type="text" id="hse-client">
-        </div>
-        <div class="field">
-          <label id="t-date">Date</label>
-          <input type="date" id="hse-date">
-        </div>
-        <div class="field">
-          <label id="t-pm">Project Manager</label>
-          <input type="text" id="hse-pm">
-        </div>
-        <div class="field">
-          <label id="t-hse-mgr">HSE Manager</label>
-          <input type="text" id="hse-manager">
-        </div>
+      </div>
+      <div class="acc-body" id="acc-body-1">
+        <div class="field"><label id="t-project-no">Nicon Project No.</label><input type="text" id="hse-project-no" oninput="autoFillProject(this.value)"></div>
+        <div class="field"><label id="t-project-name">Project Name</label><input type="text" id="hse-project-name"></div>
+        <div class="field"><label id="t-client">Client</label><input type="text" id="hse-client"></div>
+        <div class="field"><label id="t-date">Date</label><input type="date" id="hse-date"></div>
+        <div class="field"><label id="t-pm">Project Manager</label><input type="text" id="hse-pm"></div>
+        <div class="field"><label id="t-hse-mgr">HSE Manager</label><input type="text" id="hse-manager"></div>
       </div>
     </div>
 
-    <!-- SECTION 2: PPE -->
-    <div class="form-section" id="hse-step-2" style="display:none">
-      <div class="form-section-header" id="t-ppe-header">PPE – Personal Protective Equipment</div>
-      <div class="form-section-body">
+    <!-- S2: PPE -->
+    <div class="acc-section" id="acc-2">
+      <div class="acc-header" onclick="toggleAcc(2)">
+        <div class="acc-header-left">
+          <div class="acc-num">2</div>
+          <span id="t-acc-ppe">PPE</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-2"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="acc-body" id="acc-body-2" style="display:none">
         <p style="font-size:13px;color:var(--gray-dark);margin-bottom:14px" id="t-ppe-desc">Confirm which PPE is available and will be used on site.</p>
         <div id="ppe-checks"></div>
       </div>
     </div>
 
-    <!-- SECTION 3: Risk Activities -->
-    <div class="form-section" id="hse-step-3" style="display:none">
-      <div class="form-section-header" id="t-risk-header">Applicable Work Activities</div>
-      <div class="form-section-body">
-        <p style="font-size:13px;color:var(--gray-dark);margin-bottom:14px" id="t-risk-desc">Select which activities apply to this project, then confirm risk ratings.</p>
+    <!-- S3: Risk Activities -->
+    <div class="acc-section" id="acc-3">
+      <div class="acc-header" onclick="toggleAcc(3)">
+        <div class="acc-header-left">
+          <div class="acc-num">3</div>
+          <span id="t-acc-risks">Work Activities & Risk Assessment</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-3"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="acc-body" id="acc-body-3" style="display:none">
+        <p style="font-size:13px;color:var(--gray-dark);margin-bottom:14px" id="t-risk-desc">Select applicable activities. Suggested scores are pre-filled based on Nicon HSE Plan.</p>
         <div id="risk-activities"></div>
       </div>
     </div>
 
-    <!-- SECTION 4: Emergency -->
-    <div class="form-section" id="hse-step-4" style="display:none">
-      <div class="form-section-header" id="t-emergency-header">Emergency Information</div>
-      <div class="form-section-body">
-        <div class="field">
-          <label id="t-first-aid">First Aid Responsible</label>
-          <input type="text" id="hse-first-aid">
+    <!-- S4: Emergency -->
+    <div class="acc-section" id="acc-4">
+      <div class="acc-header" onclick="toggleAcc(4)">
+        <div class="acc-header-left">
+          <div class="acc-num">4</div>
+          <span id="t-acc-emergency">Emergency Information</span>
         </div>
-        <div class="field">
-          <label id="t-emergency-contact">Emergency Contact (on-site)</label>
-          <input type="text" id="hse-emergency-contact">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-4"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="field">
-          <label id="t-nearest-hospital">Nearest Hospital / Medical Facility</label>
-          <input type="text" id="hse-hospital">
+      </div>
+      <div class="acc-body" id="acc-body-4" style="display:none">
+        <div class="field"><label id="t-first-aid">First Aid Responsible</label><input type="text" id="hse-first-aid"></div>
+        <div class="field"><label id="t-emergency-contact">Emergency Contact (on-site)</label><input type="text" id="hse-emergency-contact"></div>
+        <div class="field"><label id="t-nearest-hospital">Nearest Hospital / Medical Facility</label><input type="text" id="hse-hospital"></div>
+        <div class="field"><label id="t-muster-point">Muster Point / Assembly Point</label><input type="text" id="hse-muster"></div>
+        <div class="field"><label id="t-emergency-number">Emergency Number (112 / local)</label><input type="text" id="hse-emergency-number" value="112"></div>
+      </div>
+    </div>
+
+    <!-- S5: Confirmations -->
+    <div class="acc-section" id="acc-5">
+      <div class="acc-header" onclick="toggleAcc(5)">
+        <div class="acc-header-left">
+          <div class="acc-num">5</div>
+          <span id="t-acc-confirm">HSE Confirmations</span>
         </div>
-        <div class="field">
-          <label id="t-muster-point">Muster Point</label>
-          <input type="text" id="hse-muster">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-5"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="field">
-          <label id="t-additional-notes">Additional Notes / Special Requirements</label>
-          <textarea id="hse-notes" rows="4"></textarea>
+      </div>
+      <div class="acc-body" id="acc-body-5" style="display:none">
+        <div id="confirmations-list"></div>
+      </div>
+    </div>
+
+    <!-- S6: Additional Notes -->
+    <div class="acc-section" id="acc-6">
+      <div class="acc-header" onclick="toggleAcc(6)">
+        <div class="acc-header-left">
+          <div class="acc-num">6</div>
+          <span id="t-acc-notes">Additional Notes</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-6"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="acc-body" id="acc-body-6" style="display:none">
+        <div class="field"><label id="t-additional-notes">Special Requirements / Client HSE Notes</label><textarea id="hse-notes" rows="4"></textarea></div>
+        <div class="field"><label id="t-swa-confirm">Stop Work Authority (SWA) confirmed</label>
+          <div class="toggle-group">
+            <button class="toggle-btn" onclick="toggleSWA(true,this)" id="swa-yes">✓ Confirmed</button>
+            <button class="toggle-btn selected-no" onclick="toggleSWA(false,this)" id="swa-no">✗ Not yet</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SECTION 5: Signature -->
-    <div class="form-section" id="hse-step-5" style="display:none">
-      <div class="form-section-header" id="t-sign-header">Signature & Approval</div>
-      <div class="form-section-body">
-        <div class="field">
-          <label id="t-prepared-by">Prepared By (Full Name)</label>
-          <input type="text" id="hse-prepared-by">
+    <!-- S7: Approval -->
+    <div class="acc-section" id="acc-7">
+      <div class="acc-header" onclick="toggleAcc(7)">
+        <div class="acc-header-left">
+          <div class="acc-num">7</div>
+          <span id="t-acc-approval">Signature & Approval</span>
         </div>
-        <div class="field">
-          <label id="t-your-email">Your Email (PDF will be sent here)</label>
-          <input type="email" id="hse-your-email">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="acc-check" id="acc-check-7"></div>
+          <svg class="acc-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div class="field">
-          <label id="t-pm-email">Project Manager / HSE Manager Email</label>
-          <input type="email" id="hse-pm-email">
-        </div>
+      </div>
+      <div class="acc-body" id="acc-body-7" style="display:none">
+        <div class="field"><label id="t-prepared-by">Prepared By (Full Name)</label><input type="text" id="hse-prepared-by"></div>
+        <div class="field"><label id="t-your-email">Your Email (PDF sent here)</label><input type="email" id="hse-your-email"></div>
+        <div class="field"><label id="t-pm-email">Project Manager / HSE Manager Email</label><input type="email" id="hse-pm-email"></div>
         <div style="background:var(--off-white);border-radius:var(--radius);padding:14px;margin-top:8px">
-          <p style="font-size:13px;color:var(--gray-dark)" id="t-approve-text">
-            By pressing <strong>Approve & Send</strong>, you confirm that this HSE Plan is complete and accurate. A PDF will be sent to both email addresses.
-          </p>
+          <p style="font-size:13px;color:var(--gray-dark)" id="t-approve-text">By pressing Approve & Send, you confirm this HSE Plan is complete and accurate.</p>
         </div>
+        <button onclick="approveAndSend()" style="width:100%;margin-top:14px;padding:15px;border-radius:var(--radius);border:none;cursor:pointer;background:var(--red);color:white;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:1px" id="t-approve-btn">
+          ✓ Approve & Send PDF
+        </button>
       </div>
     </div>
 
-    <!-- NAVIGATION BUTTONS -->
-    <div style="display:flex;gap:10px;margin-top:8px">
-      <button id="btn-hse-prev" onclick="hseStep(-1)" style="flex:1;padding:13px;border-radius:var(--radius);border:none;cursor:pointer;background:var(--gray-light);color:var(--gray-dark);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;display:none" id="t-prev">Previous</button>
-      <button id="btn-hse-next" onclick="hseStep(1)" style="flex:1;padding:13px;border-radius:var(--radius);border:none;cursor:pointer;background:var(--navy);color:white;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase">
-        <span id="t-next">Next</span>
-      </button>
-    </div>
+    <div style="height:20px"></div>
   </div>
 
-  <!-- INCIDENTS PAGE -->
+    <!-- INCIDENTS PAGE -->
   <div id="page-incidents" class="main-content" style="display:none">
     <div class="page-header">
       <h1 id="t-incidents-title">Incidents</h1>
@@ -720,24 +805,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
       <div id="users-list"><div class="loading" style="font-size:13px;padding:20px 0">Loading users...</div></div>
     </div>
 
-    <div class="settings-section">
-      <h3 id="t-setup-guide">Setup Guide</h3>
-      <div class="card">
-        <div class="card-body" style="font-size:13px;color:var(--gray-dark);line-height:1.7">
-          <strong style="color:var(--navy)">1. Create Supabase Project</strong><br>
-          Go to <a href="https://supabase.com" target="_blank" style="color:var(--navy)">supabase.com</a> → New project → Choose a region close to you (e.g. Frankfurt).<br><br>
-          <strong style="color:var(--navy)">2. Create Database Tables</strong><br>
-          In Supabase → SQL Editor → run the SQL from the setup guide.<br><br>
-          <strong style="color:var(--navy)">3. Add Supabase Config</strong><br>
-          Open <code>nicon-hub.html</code> → replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top.<br><br>
-          <strong style="color:var(--navy)">4. Create Users</strong><br>
-          Supabase → Authentication → Users → Invite user (email + password).<br><br>
-          <strong style="color:var(--navy)">5. Set Up EmailJS</strong><br>
-          Go to <a href="https://emailjs.com" target="_blank" style="color:var(--navy)">emailjs.com</a> → Create account → Add email service → Create template. Enter IDs above.<br><br>
-          <strong style="color:var(--navy)">6. Deploy to GitHub Pages</strong><br>
-          Create GitHub repo → Upload nicon-hub.html → Settings → Pages → Deploy from main branch.
-        </div>
-      </div>
+
     </div>
 
     <div class="settings-section">
@@ -1262,7 +1330,7 @@ async function loadProjects() {
   list.innerHTML = '<div class="loading">Loading...</div>';
 
   try {
-    const { data: projects, error } = await _sb.from('projects').select('*').order('created_at', { ascending: false });
+    const { data: projects, error } = await _sb.from('projects').select('*').eq('closed', false).order('project_no', { ascending: true });
     if (error) throw error;
 
     if (!projects || projects.length === 0) {
@@ -1367,19 +1435,24 @@ async function loadRams() {
 }
 
 function startNewHSE() {
-  hseData = {
-    projectNo: currentProject.projectNo,
-    projectName: currentProject.name,
-    client: currentProject.client,
-  };
-  document.getElementById('hse-project-no').value = currentProject.projectNo || '';
+  hseData = { ppe: {}, risks: {}, confirmations: {}, swa: undefined };
+  document.getElementById('hse-project-no').value = currentProject.project_no || '';
   document.getElementById('hse-project-name').value = currentProject.name || '';
   document.getElementById('hse-client').value = currentProject.client || '';
   document.getElementById('hse-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('hse-pm').value = '';
+  document.getElementById('hse-manager').value = '';
+  // Reset accordion - open section 1 only
+  for (let i = 1; i <= 7; i++) {
+    const body = document.getElementById('acc-body-' + i);
+    const arrow = document.querySelector('#acc-' + i + ' .acc-arrow');
+    if (body) body.style.display = i === 1 ? '' : 'none';
+    if (arrow) arrow.classList.toggle('open', i === 1);
+  }
   buildPPEChecks();
   buildRiskActivities();
-  hseCurrentStep = 1;
-  updateHSESteps();
+  buildConfirmations();
+  attachAccListeners();
   showPage('hse-form');
 }
 
@@ -1387,6 +1460,9 @@ async function openHSE(planId) {
   const { data, error } = await _sb.from('hse_plans').select('*').eq('id', planId).single();
   if (error || !data) return;
   hseData = data;
+  if (!hseData.ppe) hseData.ppe = {};
+  if (!hseData.risks) hseData.risks = {};
+  if (!hseData.confirmations) hseData.confirmations = {};
   document.getElementById('hse-project-no').value = data.project_no || '';
   document.getElementById('hse-project-name').value = data.project_name || '';
   document.getElementById('hse-client').value = data.client || '';
@@ -1401,10 +1477,18 @@ async function openHSE(planId) {
   document.getElementById('hse-prepared-by').value = data.prepared_by || '';
   document.getElementById('hse-your-email').value = data.your_email || currentUser.email;
   document.getElementById('hse-pm-email').value = data.pm_email || '';
+  for (let i = 1; i <= 7; i++) {
+    const body = document.getElementById('acc-body-' + i);
+    const arrow = document.querySelector('#acc-' + i + ' .acc-arrow');
+    if (body) body.style.display = i === 1 ? '' : 'none';
+    if (arrow) arrow.classList.toggle('open', i === 1);
+  }
   buildPPEChecks();
   buildRiskActivities();
-  hseCurrentStep = 1;
-  updateHSESteps();
+  buildConfirmations();
+  attachAccListeners();
+  // restore SWA
+  if (data.swa !== undefined) toggleSWA(data.swa, null);
   showPage('hse-form');
 }
 
@@ -1418,8 +1502,221 @@ async function autoFillProject(no) {
 }
 
 // ============================================================
-// HSE FORM STEPS
+// HSE FORM – ACCORDION
 // ============================================================
+
+// All confirmations based on the real Nicon HSE Plan document
+const CONFIRMATIONS = [
+  { id: 'induction',    en: 'HSE Induction completed for all personnel',        da: 'HSE-introduktion gennemført for alt personale',          pl: 'Wprowadzenie BHP przeprowadzone dla całego personelu',    ro: 'Inducție SSM efectuată pentru tot personalul',            lt: 'HSE įvadas atliktas visam personalui',                    note_en: 'All employees must be inducted on first day', note_da: 'Alle medarbejdere introduceres på første dag' },
+  { id: 'toolboxtalk',  en: 'Toolbox Talk performed',                           da: 'Toolbox Talk gennemført',                                pl: 'Odprawa BHP przeprowadzona',                              ro: 'Discuție toolbox efectuată',                              lt: 'Toolbox pokalbis atliktas',                               note_en: 'Job-specific risks communicated to all involved', note_da: 'Jobspecifikke risici kommunikeret til alle involverede' },
+  { id: 'swa',          en: 'Stop Work Authority (SWA) communicated',           da: 'Stop Work Authority (SWA) kommunikeret',                 pl: 'Uprawnienie do wstrzymania pracy przekazane',             ro: 'Autoritatea de oprire a lucrului comunicată',             lt: 'Darbo sustabdymo teisė perduota',                         note_en: 'All personnel may stop unsafe work without reprisal', note_da: 'Alt personale kan stoppe usikkert arbejde' },
+  { id: 'drugs',        en: 'Zero tolerance drugs & alcohol confirmed',          da: 'Nultolerance for alkohol og stoffer bekræftet',          pl: 'Potwierdzona zerowa tolerancja dla alkoholu i narkotyków', ro: 'Toleranță zero pentru droguri și alcool confirmată',      lt: 'Nulinė tolerancija narkotikams ir alkoholiui patvirtinta', note_en: 'No drugs or alcohol on site at any time', note_da: 'Ingen alkohol eller stoffer på arbejdspladsen' },
+  { id: 'waste',        en: 'Waste segregation system in place',                da: 'Affaldshåndtering og sortering på plads',                pl: 'System segregacji odpadów wdrożony',                      ro: 'Sistem de segregare a deșeurilor implementat',            lt: 'Atliekų rūšiavimo sistema įdiegta',                       note_en: 'Paper, steel, paint waste, wood etc. segregated', note_da: 'Papir, stål, maleraffald, træ osv. sorteret' },
+  { id: 'welfare',      en: 'Welfare facilities available (toilets, canteen)',  da: 'Velfærdsfaciliteter til rådighed (toiletter, kantine)',  pl: 'Dostępne zaplecze socjalne (toalety, stołówka)',          ro: 'Facilități sociale disponibile (toalete, cantină)',       lt: 'Socialinės patalpos prieinamos (tualetai, valgykla)',      note_en: 'Changing rooms, showers, canteen accessible', note_da: 'Omklædningsrum, brusere, kantine tilgængeligt' },
+  { id: 'psychology',   en: 'Psychological work environment – Code of Conduct', da: 'Psykisk arbejdsmiljø – adfærdskodeks kommunikeret',      pl: 'Środowisko psychologiczne – Kodeks postępowania',         ro: 'Mediu psihologic – Cod de conduită comunicat',           lt: 'Psichologinė aplinka – elgesio kodeksas perduotas',       note_en: 'Zero tolerance for bullying and harassment', note_da: 'Nultolerance over for mobning og chikane' },
+  { id: 'emergency_drill', en: 'Emergency plan reviewed with personnel',        da: 'Nødplan gennemgået med personalet',                      pl: 'Plan awaryjny omówiony z personelem',                     ro: 'Planul de urgență revizuit cu personalul',                lt: 'Avarinė planas aptartas su personalu',                    note_en: 'Muster point, first aid, hospital location known', note_da: 'Samlingssted, førstehjælp, hospital kendt' },
+];
+
+const RISK_ACTIVITIES = [
+  { id: 'general',     en: 'General / HSE Induction',              da: 'Generelt / HSE-introduktion',         pl: 'Ogólne / Wprowadzenie BHP',           ro: 'General / Inducție SSM',              lt: 'Bendras / HSE įvadas',               sugS: 3, sugL: 3 },
+  { id: 'lifting',     en: 'Lifting, Moving and Pulling',           da: 'Løft, flytning og træk',              pl: 'Podnoszenie, przemieszczanie',         ro: 'Ridicare, mutare și tragere',         lt: 'Kėlimas, perkėlimas',                sugS: 5, sugL: 3 },
+  { id: 'highpressure',en: 'High Pressure Bottles (O₂/Acetylene)',  da: 'Højtryksflasker (O₂/Acetylen)',       pl: 'Butle wysokociśnieniowe',             ro: 'Butelii presiune înaltă',             lt: 'Aukšto slėgio balionai',             sugS: 5, sugL: 2 },
+  { id: 'handtools',   en: 'Hand Tools (Grinders, Drills)',         da: 'Håndværktøj (slibere, boremaskiner)', pl: 'Narzędzia ręczne',                    ro: 'Scule manuale',                       lt: 'Rankiniai įrankiai',                 sugS: 4, sugL: 3 },
+  { id: 'cables',      en: 'Extension Cables & Wires',              da: 'Forlængerledninger og kabler',        pl: 'Przedłużacze i kable',                ro: 'Cabluri și fire',                     lt: 'Prailginimo kabeliai',               sugS: 4, sugL: 2 },
+  { id: 'housekeeping',en: 'Housekeeping / Working Areas',          da: 'Rengøring / arbejdsområder',          pl: 'Porządek / obszary robocze',          ro: 'Curățenie / zone de lucru',           lt: 'Tvarkymas / darbo zonos',            sugS: 4, sugL: 3 },
+  { id: 'hotwork',     en: 'Hot Work (Welding, Cutting, Grinding)',  da: 'Varmt arbejde (svejsning, skæring)',  pl: 'Prace gorące (spawanie, cięcie)',     ro: 'Lucru la cald (sudare, tăiere)',      lt: 'Karšti darbai (suvirinimas)',        sugS: 5, sugL: 3 },
+  { id: 'heights',     en: 'Working at Heights',                    da: 'Arbejde i højden',                    pl: 'Praca na wysokości',                  ro: 'Lucru la înălțime',                  lt: 'Darbas aukštyje',                    sugS: 5, sugL: 3 },
+  { id: 'sandblast',   en: 'Sandblasting',                          da: 'Sandblæsning',                        pl: 'Piaskowanie',                         ro: 'Sablare',                             lt: 'Smėliavimas',                        sugS: 5, sugL: 2 },
+  { id: 'paintwork',   en: 'Paint Work',                            da: 'Malerarbejde',                        pl: 'Prace malarskie',                     ro: 'Lucrări de vopsire',                 lt: 'Dažymo darbai',                      sugS: 3, sugL: 2 },
+  { id: 'vehicles',    en: 'Vehicles / Forklifts',                  da: 'Køretøjer / gaffeltrucks',            pl: 'Pojazdy / wózki widłowe',            ro: 'Vehicule / stivuitoare',              lt: 'Transporto priemonės / krautuvai',   sugS: 5, sugL: 2 },
+  { id: 'epoxy',       en: 'Epoxy / Isocyanate Paint',              da: 'Epoxy / Isocyanat maling',            pl: 'Farba epoksydowa / izocyjanianowa',  ro: 'Vopsea epoxidică / izocianat',       lt: 'Epoksidiniai / izocianatų dažai',    sugS: 4, sugL: 3 },
+  { id: 'chainsaw',    en: 'Chain Saw (subcontractors)',             da: 'Kædesav (underleverandører)',         pl: 'Piła łańcuchowa (podwykonawcy)',     ro: 'Ferăstrău cu lanț (subcontractori)', lt: 'Grandininis pjūklas (subrangovai)', sugS: 4, sugL: 3 },
+  { id: 'garbage',     en: 'Garbage / Waste Handling',              da: 'Affaldshåndtering',                   pl: 'Gospodarka odpadami',                 ro: 'Gestionarea deșeurilor',             lt: 'Atliekų tvarkymas',                  sugS: 4, sugL: 2 },
+];
+
+const PPE_ITEMS = {
+  en: ['Flame resistant coveralls','Safety shoes / boots','Hard hat','Safety glasses','Dark safety glasses','Gloves','Hearing protection','Full body harness','PAPR (fresh air welding mask)','FFP3 dust mask','Kevlar trousers (chain saw)'],
+  da: ['Flammehæmmende overall','Sikkerhedssko / -støvler','Sikkerhedshjelm','Sikkerhedsbriller','Mørke sikkerhedsbriller','Handsker','Høreværn','Fuldt sele-sæt','PAPR (friskluft svejsemasker)','FFP3 støvmaske','Kevlar-bukser (kædesav)'],
+  pl: ['Odzież trudnopalna','Buty/obuwie BHP','Kask ochronny','Okulary ochronne','Ciemne okulary ochronne','Rękawice','Ochronniki słuchu','Szelki bezpieczeństwa','PAPR (maska spawalnicza)','Maska FFP3','Spodnie kevlarowe (piła)'],
+  ro: ['Combinezon rezistent la foc','Ghete/pantofi de protecție','Cască de protecție','Ochelari de protecție','Ochelari întunecați','Mănuși','Protecție auditivă','Ham integral','PAPR (mască sudură)','Mască FFP3','Pantaloni Kevlar (ferăstrău)'],
+  lt: ['Liepsnai atsparūs kombinezonai','Saugūs batai / auliniai','Apsauginis šalmas','Apsauginiai akiniai','Tamsūs apsauginiai akiniai','Pirštinės','Klausos apsauga','Visas kūno diržas','PAPR (šviežio oro kaukė)','FFP3 dulkių kaukė','Kevlaro kelnės (pjūklas)'],
+};
+
+function toggleAcc(n) {
+  const body = document.getElementById('acc-body-' + n);
+  const arrow = document.querySelector('#acc-' + n + ' .acc-arrow');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  arrow.classList.toggle('open', !isOpen);
+}
+
+function buildPPEChecks() {
+  const items = PPE_ITEMS[currentLang] || PPE_ITEMS.en;
+  const container = document.getElementById('ppe-checks');
+  container.innerHTML = items.map((item, i) => {
+    const val = hseData.ppe && hseData.ppe[i] !== undefined ? hseData.ppe[i] : null;
+    return `
+    <div class="confirm-item">
+      <span class="confirm-label">${item}</span>
+      <div class="confirm-toggle">
+        <button class="confirm-btn ${val === true ? 'yes' : ''}" onclick="setPPE(${i}, true, this)">✓</button>
+        <button class="confirm-btn ${val === false ? 'no' : ''}" onclick="setPPE(${i}, false, this)">✗</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateAccCheck(2);
+}
+
+function setPPE(idx, val, btn) {
+  if (!hseData.ppe) hseData.ppe = {};
+  hseData.ppe[idx] = val;
+  const row = btn.closest('.confirm-item');
+  row.querySelectorAll('.confirm-btn').forEach(b => { b.classList.remove('yes','no'); });
+  btn.classList.add(val ? 'yes' : 'no');
+  updateAccCheck(2);
+}
+
+function buildRiskActivities() {
+  const container = document.getElementById('risk-activities');
+  container.innerHTML = RISK_ACTIVITIES.map(act => {
+    const label = act[currentLang] || act.en;
+    const isSelected = hseData.risks && hseData.risks[act.id];
+    const r = hseData.risks && hseData.risks[act.id] ? hseData.risks[act.id] : null;
+    const s = r ? r.s : act.sugS;
+    const l = r ? r.l : act.sugL;
+    const score = s * l;
+    return `
+    <div style="border-bottom:1px solid var(--gray-light);padding:10px 0" id="risk-row-${act.id}">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:14px;font-weight:600;color:var(--navy);flex:1">${label}</span>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0">
+          <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleRisk('${act.id}', this.checked)" style="width:18px;height:18px;cursor:pointer">
+        </label>
+      </div>
+      <div id="risk-detail-${act.id}" style="display:${isSelected ? 'block' : 'none'};margin-top:10px">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--gray-dark);font-weight:600">S:</span>
+            <select onchange="updateRiskScore('${act.id}')" id="risk-s-${act.id}" style="padding:5px 8px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px">
+              ${[1,2,3,4,5].map(n => `<option value="${n}" ${s==n?'selected':''}>${n}</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--gray-dark);font-weight:600">L:</span>
+            <select onchange="updateRiskScore('${act.id}')" id="risk-l-${act.id}" style="padding:5px 8px;border:1.5px solid var(--gray-light);border-radius:8px;font-size:13px">
+              ${[1,2,3,4,5].map(n => `<option value="${n}" ${l==n?'selected':''}>${n}</option>`).join('')}
+            </select>
+          </div>
+          <div id="risk-score-${act.id}" style="margin-left:4px">${getRiskBadge(score)}</div>
+        </div>
+        <div style="font-size:11px;color:var(--gray);margin-top:4px" id="risk-sug-${act.id}">
+          💡 Suggested: S=${act.sugS} × L=${act.sugL} = ${act.sugS*act.sugL} ${getRiskLabel(act.sugS*act.sugL)}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateAccCheck(3);
+}
+
+function getRiskBadge(score) {
+  if (score >= 15) return `<span class="risk-badge risk-H">H – ${score}</span>`;
+  if (score >= 8)  return `<span class="risk-badge risk-M">M – ${score}</span>`;
+  return `<span class="risk-badge risk-L">L – ${score}</span>`;
+}
+
+function getRiskLabel(score) {
+  if (score >= 15) return '🔴 H';
+  if (score >= 8)  return '🟡 M';
+  return '🟢 L';
+}
+
+function toggleRisk(id, checked) {
+  if (!hseData.risks) hseData.risks = {};
+  const detail = document.getElementById('risk-detail-' + id);
+  if (checked) {
+    const act = RISK_ACTIVITIES.find(a => a.id === id);
+    hseData.risks[id] = { s: act.sugS, l: act.sugL, score: act.sugS * act.sugL };
+    detail.style.display = 'block';
+    updateRiskScore(id);
+  } else {
+    delete hseData.risks[id];
+    detail.style.display = 'none';
+  }
+  updateAccCheck(3);
+}
+
+function updateRiskScore(id) {
+  const s = parseInt(document.getElementById('risk-s-' + id)?.value || 3);
+  const l = parseInt(document.getElementById('risk-l-' + id)?.value || 3);
+  const score = s * l;
+  document.getElementById('risk-score-' + id).innerHTML = getRiskBadge(score);
+  if (!hseData.risks) hseData.risks = {};
+  hseData.risks[id] = { s, l, score, rating: score >= 15 ? 'H' : score >= 8 ? 'M' : 'L' };
+  updateAccCheck(3);
+}
+
+function buildConfirmations() {
+  const container = document.getElementById('confirmations-list');
+  container.innerHTML = CONFIRMATIONS.map(c => {
+    const label = c[currentLang] || c.en;
+    const note = c['note_' + currentLang] || c.note_en;
+    const val = hseData.confirmations && hseData.confirmations[c.id];
+    return `
+    <div class="confirm-item">
+      <span class="confirm-label">${label}<small>${note}</small></span>
+      <div class="confirm-toggle">
+        <button class="confirm-btn ${val === true ? 'yes' : ''}" onclick="setConfirm('${c.id}', true, this)">✓</button>
+        <button class="confirm-btn ${val === false ? 'no' : ''}" onclick="setConfirm('${c.id}', false, this)">✗</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateAccCheck(5);
+}
+
+function setConfirm(id, val, btn) {
+  if (!hseData.confirmations) hseData.confirmations = {};
+  hseData.confirmations[id] = val;
+  const row = btn.closest('.confirm-item');
+  row.querySelectorAll('.confirm-btn').forEach(b => b.classList.remove('yes','no'));
+  btn.classList.add(val ? 'yes' : 'no');
+  updateAccCheck(5);
+}
+
+function toggleSWA(val, btn) {
+  hseData.swa = val;
+  document.getElementById('swa-yes').classList.toggle('selected-yes', val);
+  document.getElementById('swa-no').classList.toggle('selected-no', !val);
+  updateAccCheck(6);
+}
+
+function updateAccCheck(n) {
+  const el = document.getElementById('acc-check-' + n);
+  if (!el) return;
+  let done = false;
+  if (n === 1) done = !!(document.getElementById('hse-project-no')?.value && document.getElementById('hse-pm')?.value);
+  if (n === 2) done = hseData.ppe && Object.keys(hseData.ppe).length >= 5;
+  if (n === 3) done = hseData.risks && Object.keys(hseData.risks).length > 0;
+  if (n === 4) done = !!(document.getElementById('hse-first-aid')?.value && document.getElementById('hse-muster')?.value);
+  if (n === 5) done = hseData.confirmations && Object.values(hseData.confirmations).filter(v => v === true).length >= 4;
+  if (n === 6) done = !!(document.getElementById('hse-notes') && hseData.swa !== undefined);
+  if (n === 7) done = !!(document.getElementById('hse-prepared-by')?.value && document.getElementById('hse-your-email')?.value);
+  el.classList.toggle('done', done);
+}
+
+// Field change listeners for acc checks
+function attachAccListeners() {
+  ['hse-project-no','hse-pm'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => updateAccCheck(1));
+  });
+  ['hse-first-aid','hse-muster'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => updateAccCheck(4));
+  });
+  ['hse-prepared-by','hse-your-email'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => updateAccCheck(7));
+  });
+}
+
+
 function buildPPEChecks() {
   const items = currentLang === 'da' ? PPE_ITEMS_DA : PPE_ITEMS_EN;
   const container = document.getElementById('ppe-checks');
@@ -1598,6 +1895,8 @@ async function approveAndSend() {
       hse_manager: plan.hseManager,
       ppe: plan.ppe,
       risks: plan.risks,
+      confirmations: plan.confirmations,
+      swa: plan.swa,
       first_aid: plan.firstAid,
       emergency_contact: plan.emergencyContact,
       hospital: plan.hospital,
@@ -1773,6 +2072,7 @@ function generateHSEPdf(plan) {
   section('EMERGENCY INFORMATION');
   row('First Aid Responsible', plan.firstAid);
   row('Emergency Contact', plan.emergencyContact);
+  row('Emergency Number', plan.emergencyNumber || '112');
   row('Nearest Hospital', plan.hospital);
   row('Muster Point', plan.musterPoint);
   if (plan.notes) {
@@ -1784,6 +2084,31 @@ function generateHSEPdf(plan) {
     pdf.text(lines, M, y);
     y += lines.length * 5 + 4;
   }
+
+  y += 4;
+  if (y > 240) { pdf.addPage(); y = 14; }
+  section('HSE CONFIRMATIONS');
+  const confirmLabels = {
+    induction: 'HSE Induction', toolboxtalk: 'Toolbox Talk', swa: 'Stop Work Authority',
+    drugs: 'Zero Tolerance Drugs & Alcohol', waste: 'Waste Segregation',
+    welfare: 'Welfare Facilities', psychology: 'Psychological Work Environment',
+    emergency_drill: 'Emergency Plan Reviewed'
+  };
+  Object.entries(confirmLabels).forEach(([id, label]) => {
+    const val = plan.confirmations && plan.confirmations[id];
+    pdf.setFontSize(9); pdf.setFont('helvetica', 'normal');
+    pdf.text(label, M, y + 4);
+    pdf.setFont('helvetica', 'bold');
+    const col = val ? [26,122,74] : [208,2,27];
+    pdf.setTextColor(col[0], col[1], col[2]);
+    pdf.text(val ? '✓ Confirmed' : '— Not confirmed', W - M - 22, y + 4);
+    pdf.setTextColor(0,0,0);
+    pdf.setDrawColor(230, 232, 240);
+    pdf.line(M, y + 6, W - M, y + 6);
+    y += 8;
+    if (y > 270) { pdf.addPage(); y = 14; }
+  });
+  row('Stop Work Authority communicated', plan.swa ? 'Yes' : 'No');
 
   y += 4;
   section('APPROVAL & SIGNATURE');
