@@ -446,6 +446,28 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
 .confirm-btn.yes { border-color: var(--success); background: #e3f5ec; color: var(--success); }
 .confirm-btn.no { border-color: var(--red); background: #fde8ea; color: var(--red); }
 
+
+/* ---- QHSE TILES ---- */
+.qhse-tile {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 12px;
+  cursor: pointer; text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.qhse-tile:active { transform: scale(0.96); }
+.qhse-tile-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.qhse-tile-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700; color: var(--navy);
+}
+.qhse-tile-count {
+  font-size: 12px; color: var(--gray); font-weight: 600;
+}
+
 /* ---- ROLE BADGE ---- */
 .role-badge {
   font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -771,6 +793,77 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     </button>
   </div>
 
+  <!-- QHSE PAGE -->
+  <div id="page-qhse" class="main-content" style="display:none">
+    <div class="page-header">
+      <h1 id="t-qhse-title">QHSE</h1>
+      <p id="t-qhse-sub">Select a project first, then choose a document type</p>
+    </div>
+
+    <!-- Project selector -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-body" style="padding:12px 16px">
+        <label style="font-size:11px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:6px" id="t-qhse-project-lbl">Project</label>
+        <select id="qhse-project-select" onchange="onQHSEProjectChange()" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:var(--radius);font-family:'Barlow',sans-serif;font-size:15px;color:var(--text);background:var(--white)">
+          <option value="">— Select project —</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Document type tiles -->
+    <div id="qhse-tiles" style="opacity:0.4;pointer-events:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+
+        <!-- HSE Plan tile -->
+        <div class="qhse-tile" onclick="openQHSESection('hse')">
+          <div class="qhse-tile-icon" style="background:#1a2744">
+            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="qhse-tile-label" id="t-tile-hse">HSE Plan</div>
+          <div class="qhse-tile-count" id="qhse-count-hse">—</div>
+        </div>
+
+        <!-- Toolbox Talk tile -->
+        <div class="qhse-tile" onclick="openQHSESection('toolbox')">
+          <div class="qhse-tile-icon" style="background:#c47a00">
+            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="qhse-tile-label" id="t-tile-toolbox">Toolbox Talk</div>
+          <div class="qhse-tile-count" id="qhse-count-toolbox">—</div>
+        </div>
+
+        <!-- Incidents tile -->
+        <div class="qhse-tile" onclick="openQHSESection('incidents')">
+          <div class="qhse-tile-icon" style="background:#d0021b">
+            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="qhse-tile-label" id="t-tile-incidents">Incidents</div>
+          <div class="qhse-tile-count" id="qhse-count-incidents">—</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBOX TALK LIST PAGE -->
+  <div id="page-toolbox" class="main-content" style="display:none">
+    <div class="page-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn-back" onclick="showPage('qhse')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div>
+          <h1 id="t-toolbox-title">Toolbox Talks</h1>
+          <p id="toolbox-project-sub" style="font-size:12px;color:var(--gray)"></p>
+        </div>
+      </div>
+    </div>
+    <div id="toolbox-list"></div>
+    <button class="fab" onclick="openNewToolboxModal()">
+      <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
+
   <!-- SETTINGS PAGE -->
   <div id="page-settings" class="main-content" style="display:none">
     <div class="page-header">
@@ -834,9 +927,9 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
       <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       <span id="t-nav-projects">Projects</span>
     </button>
-    <button class="nav-item" id="nav-incidents" onclick="showPage('incidents')">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <span id="t-nav-incidents">Incidents</span>
+    <button class="nav-item" id="nav-qhse" onclick="showPage('qhse')">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span id="t-nav-qhse">QHSE</span>
       <div class="nav-dot" id="incident-dot"></div>
     </button>
     <button class="nav-item" id="nav-settings" onclick="showPage('settings')">
@@ -941,6 +1034,49 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
   </div>
 </div>
 
+<!-- Toolbox Talk Modal -->
+<div class="modal-overlay" id="modal-toolbox">
+  <div class="modal">
+    <h3 id="t-new-toolbox">New Toolbox Talk</h3>
+    <div class="field">
+      <label id="t-tb-date">Date & Time</label>
+      <input type="datetime-local" id="tb-date">
+    </div>
+    <div class="field">
+      <label id="t-tb-topic">Topic / Work Activity</label>
+      <input type="text" id="tb-topic" placeholder="e.g. Hot Work – Welding on deck">
+    </div>
+    <div class="field">
+      <label id="t-tb-location">Location</label>
+      <input type="text" id="tb-location" placeholder="Workshop / Vessel / Area">
+    </div>
+    <div class="field">
+      <label id="t-tb-foreman">Foreman / Conducted by</label>
+      <input type="text" id="tb-foreman" placeholder="Full name">
+    </div>
+    <div class="field">
+      <label id="t-tb-attendees">Number of Attendees</label>
+      <input type="number" id="tb-attendees" min="1" placeholder="e.g. 5">
+    </div>
+    <div class="field">
+      <label id="t-tb-risks">Key Risks Discussed</label>
+      <div id="tb-risks-list" style="margin-bottom:8px"></div>
+    </div>
+    <div class="field">
+      <label id="t-tb-actions">Actions / Instructions Given</label>
+      <textarea id="tb-actions" rows="3" placeholder="What was agreed or instructed..."></textarea>
+    </div>
+    <div class="field">
+      <label id="t-tb-email">Send PDF to (email)</label>
+      <input type="email" id="tb-email">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-toolbox')" id="t-cancel-tb">Cancel</button>
+      <button style="flex:1;padding:13px;border-radius:var(--radius);background:var(--navy);color:white;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase" onclick="submitToolbox()" id="t-submit-toolbox">Save & Send PDF</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -997,6 +1133,26 @@ const T = {
     'setup-guide': 'Setup Guide', 'signed-in-as': 'Signed in as',
     'authenticated-user': 'Authenticated user', 'sign-out-btn': 'Sign Out',
     'nav-projects': 'Projects', 'nav-incidents': 'Incidents', 'nav-settings': 'Settings',
+    
+    'nav-qhse': 'QHSE',
+    'qhse-title': 'QHSE',
+    'qhse-sub': 'Select a project first, then choose a document type',
+    'qhse-project-lbl': 'Project',
+    'tile-hse': 'HSE Plan',
+    'tile-toolbox': 'Toolbox Talk',
+    'tile-incidents': 'Incidents',
+    'toolbox-title': 'Toolbox Talks',
+    'new-toolbox': 'New Toolbox Talk',
+    'tb-date': 'Date & Time',
+    'tb-topic': 'Topic / Work Activity',
+    'tb-location': 'Location',
+    'tb-foreman': 'Foreman / Conducted by',
+    'tb-attendees': 'Number of Attendees',
+    'tb-risks': 'Key Risks Discussed',
+    'tb-actions': 'Actions / Instructions Given',
+    'tb-email': 'Send PDF to (email)',
+    'cancel-tb': 'Cancel',
+    'submit-toolbox': 'Save & Send PDF',
     'remember-me': 'Remember me on this device',
     'biometric-btn': 'Sign in with Face ID / Fingerprint',
     'biometric-setup': 'Enable Face ID / Fingerprint for this device',
@@ -1040,6 +1196,26 @@ const T = {
     'setup-guide': 'Opsætningsvejledning', 'signed-in-as': 'Logget ind som',
     'authenticated-user': 'Godkendt bruger', 'sign-out-btn': 'Log ud',
     'nav-projects': 'Projekter', 'nav-incidents': 'Hændelser', 'nav-settings': 'Indstillinger',
+    
+    'nav-qhse': 'QHSE',
+    'qhse-title': 'QHSE',
+    'qhse-sub': 'Vælg et projekt, vælg derefter dokumenttype',
+    'qhse-project-lbl': 'Projekt',
+    'tile-hse': 'HSE Plan',
+    'tile-toolbox': 'Toolbox Talk',
+    'tile-incidents': 'Hændelser',
+    'toolbox-title': 'Toolbox Talks',
+    'new-toolbox': 'Ny Toolbox Talk',
+    'tb-date': 'Dato og tid',
+    'tb-topic': 'Emne / arbejdsaktivitet',
+    'tb-location': 'Placering',
+    'tb-foreman': 'Formand / udført af',
+    'tb-attendees': 'Antal deltagere',
+    'tb-risks': 'Gennemgåede risici',
+    'tb-actions': 'Handlinger / instruktioner',
+    'tb-email': 'Send PDF til (e-mail)',
+    'cancel-tb': 'Annuller',
+    'submit-toolbox': 'Gem & Send PDF',
     'remember-me': 'Husk mig på denne enhed',
     'biometric-btn': 'Log ind med Face ID / fingeraftryk',
     'biometric-setup': 'Aktiver Face ID / fingeraftryk på denne enhed',
@@ -1076,6 +1252,26 @@ const T = {
     'setup-guide': 'Przewodnik', 'signed-in-as': 'Zalogowany jako',
     'authenticated-user': 'Użytkownik', 'sign-out-btn': 'Wyloguj',
     'nav-projects': 'Projekty', 'nav-incidents': 'Zdarzenia', 'nav-settings': 'Ustawienia',
+    
+    'nav-qhse': 'QHSE',
+    'qhse-title': 'QHSE',
+    'qhse-sub': 'Najpierw wybierz projekt',
+    'qhse-project-lbl': 'Projekt',
+    'tile-hse': 'Plan BHP',
+    'tile-toolbox': 'Odprawa BHP',
+    'tile-incidents': 'Zdarzenia',
+    'toolbox-title': 'Odprawy BHP',
+    'new-toolbox': 'Nowa Odprawa BHP',
+    'tb-date': 'Data i godzina',
+    'tb-topic': 'Temat / czynność',
+    'tb-location': 'Miejsce',
+    'tb-foreman': 'Brygadzista',
+    'tb-attendees': 'Liczba uczestników',
+    'tb-risks': 'Omówione zagrożenia',
+    'tb-actions': 'Działania / instrukcje',
+    'tb-email': 'Wyślij PDF na (e-mail)',
+    'cancel-tb': 'Anuluj',
+    'submit-toolbox': 'Zapisz i wyślij PDF',
     'remember-me': 'Zapamiętaj mnie na tym urządzeniu',
     'biometric-btn': 'Zaloguj się przez Face ID / odcisk palca',
     'biometric-setup': 'Włącz Face ID / odcisk palca na tym urządzeniu',
@@ -1111,6 +1307,26 @@ const T = {
     'setup-guide': 'Ghid', 'signed-in-as': 'Conectat ca',
     'authenticated-user': 'Utilizator', 'sign-out-btn': 'Deconectare',
     'nav-projects': 'Proiecte', 'nav-incidents': 'Incidente', 'nav-settings': 'Setări',
+    
+    'nav-qhse': 'QHSE',
+    'qhse-title': 'QHSE',
+    'qhse-sub': 'Selectați mai întâi un proiect',
+    'qhse-project-lbl': 'Proiect',
+    'tile-hse': 'Plan SSM',
+    'tile-toolbox': 'Toolbox Talk',
+    'tile-incidents': 'Incidente',
+    'toolbox-title': 'Toolbox Talks',
+    'new-toolbox': 'Toolbox Talk nou',
+    'tb-date': 'Dată și oră',
+    'tb-topic': 'Subiect / activitate',
+    'tb-location': 'Locație',
+    'tb-foreman': 'Maistru / efectuat de',
+    'tb-attendees': 'Număr participanți',
+    'tb-risks': 'Riscuri discutate',
+    'tb-actions': 'Acțiuni / instrucțiuni',
+    'tb-email': 'Trimite PDF la (e-mail)',
+    'cancel-tb': 'Anulare',
+    'submit-toolbox': 'Salvează și trimite PDF',
     'remember-me': 'Ține-mă minte pe acest dispozitiv',
     'biometric-btn': 'Conectare cu Face ID / amprentă',
     'biometric-setup': 'Activați Face ID / amprentă pe acest dispozitiv',
@@ -1146,6 +1362,26 @@ const T = {
     'setup-guide': 'Sąrankos vadovas', 'signed-in-as': 'Prisijungęs kaip',
     'authenticated-user': 'Vartotojas', 'sign-out-btn': 'Atsijungti',
     'nav-projects': 'Projektai', 'nav-incidents': 'Incidentai', 'nav-settings': 'Nustatymai',
+    
+    'nav-qhse': 'QHSE',
+    'qhse-title': 'QHSE',
+    'qhse-sub': 'Pirmiausia pasirinkite projektą',
+    'qhse-project-lbl': 'Projektas',
+    'tile-hse': 'DSS planas',
+    'tile-toolbox': 'Toolbox pokalbis',
+    'tile-incidents': 'Incidentai',
+    'toolbox-title': 'Toolbox pokalbiai',
+    'new-toolbox': 'Naujas Toolbox pokalbis',
+    'tb-date': 'Data ir laikas',
+    'tb-topic': 'Tema / veikla',
+    'tb-location': 'Vieta',
+    'tb-foreman': 'Meistras / atliko',
+    'tb-attendees': 'Dalyvių skaičius',
+    'tb-risks': 'Aptarti rizikos veiksniai',
+    'tb-actions': 'Veiksmai / nurodymai',
+    'tb-email': 'Siųsti PDF (el. paštas)',
+    'cancel-tb': 'Atšaukti',
+    'submit-toolbox': 'Išsaugoti ir siųsti PDF',
     'remember-me': 'Prisiminti mane šiame įrenginyje',
     'biometric-btn': 'Prisijungti su Face ID / piršto antspaudu',
     'biometric-setup': 'Įjungti Face ID / piršto antspaudą šiame įrenginyje',
@@ -2329,6 +2565,251 @@ function removeBiometric() {
   document.getElementById('biometric-btn-container').style.display = 'none';
   updateBiometricSettings();
   showToast('Biometric login removed', '');
+}
+
+
+// ============================================================
+// QHSE PAGE
+// ============================================================
+const TB_RISKS = [
+  { id:'hotwork',   en:'Hot Work',          da:'Varmt arbejde',      pl:'Prace gorące',       ro:'Lucru la cald',      lt:'Karšti darbai' },
+  { id:'lifting',   en:'Lifting',           da:'Løft',               pl:'Podnoszenie',         ro:'Ridicare',           lt:'Kėlimas' },
+  { id:'heights',   en:'Working at Heights',da:'Arbejde i højden',   pl:'Praca na wysokości', ro:'Lucru la înălțime',  lt:'Darbas aukštyje' },
+  { id:'ppe',       en:'PPE Usage',         da:'PPE brug',           pl:'Stosowanie ŚOI',     ro:'Utilizare EIP',      lt:'AAP naudojimas' },
+  { id:'electrical',en:'Electrical Safety', da:'El-sikkerhed',       pl:'Bezpieczeństwo el.', ro:'Siguranță electrică', lt:'Elektros sauga' },
+  { id:'chemicals', en:'Chemicals / COSHH', da:'Kemikalier',         pl:'Substancje chemiczne',ro:'Substanțe chimice',  lt:'Cheminės medžiagos' },
+  { id:'housekeep', en:'Housekeeping',      da:'Orden og ryddelighed',pl:'Porządek',           ro:'Curățenie',          lt:'Tvarkymas' },
+  { id:'vehicles',  en:'Vehicles / Forklifts',da:'Køretøjer',       pl:'Pojazdy',            ro:'Vehicule',           lt:'Transportas' },
+  { id:'manual',    en:'Manual Handling',   da:'Manuel håndtering',  pl:'Ręczne przenoszenie', ro:'Manipulare manuală', lt:'Rankinis kėlimas' },
+  { id:'emergency', en:'Emergency Procedures',da:'Nødprocedurer',  pl:'Procedury awaryjne',  ro:'Proceduri urgență',  lt:'Avarinės procedūros' },
+];
+
+async function loadQHSEPage() {
+  // Load open projects into selector
+  const sel = document.getElementById('qhse-project-select');
+  sel.innerHTML = '<option value="">— Select project —</option>';
+  try {
+    const { data } = await _sb.from('projects').select('id,project_no,name').eq('closed', false).order('project_no', {ascending:true});
+    if (data) data.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = '#' + p.project_no + ' – ' + (p.name || '');
+      if (currentProject && currentProject.id === p.id) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+  if (currentProject) { sel.value = currentProject.id; onQHSEProjectChange(); }
+}
+
+async function onQHSEProjectChange() {
+  const sel = document.getElementById('qhse-project-select');
+  const tiles = document.getElementById('qhse-tiles');
+  if (!sel.value) { tiles.style.opacity = '0.4'; tiles.style.pointerEvents = 'none'; return; }
+  // Load selected project
+  const { data } = await _sb.from('projects').select('*').eq('id', sel.value).single();
+  if (data) currentProject = data;
+  tiles.style.opacity = '1'; tiles.style.pointerEvents = '';
+  // Load counts
+  try {
+    const [hse, tb, inc] = await Promise.all([
+      _sb.from('hse_plans').select('id', {count:'exact'}).eq('project_id', sel.value),
+      _sb.from('toolbox_talks').select('id', {count:'exact'}).eq('project_id', sel.value),
+      _sb.from('incidents').select('id', {count:'exact'}).eq('project_id', sel.value),
+    ]);
+    document.getElementById('qhse-count-hse').textContent = (hse.count || 0) + ' doc' + (hse.count !== 1 ? 's' : '');
+    document.getElementById('qhse-count-toolbox').textContent = (tb.count || 0) + ' talk' + (tb.count !== 1 ? 's' : '');
+    document.getElementById('qhse-count-incidents').textContent = (inc.count || 0) + ' report' + (inc.count !== 1 ? 's' : '');
+  } catch(e) {
+    document.getElementById('qhse-count-hse').textContent = '—';
+    document.getElementById('qhse-count-toolbox').textContent = '—';
+    document.getElementById('qhse-count-incidents').textContent = '—';
+  }
+}
+
+function openQHSESection(type) {
+  if (!currentProject) { showToast('Select a project first', 'error'); return; }
+  if (type === 'hse') { showPage('rams'); loadRams(); }
+  else if (type === 'toolbox') { showPage('toolbox'); loadToolboxList(); }
+  else if (type === 'incidents') { showPage('incidents'); loadIncidents(); }
+}
+
+// ============================================================
+// TOOLBOX TALK
+// ============================================================
+async function loadToolboxList() {
+  const list = document.getElementById('toolbox-list');
+  document.getElementById('toolbox-project-sub').textContent = '#' + currentProject.project_no + ' · ' + (currentProject.name || '');
+  list.innerHTML = '<div class="loading">Loading...</div>';
+  try {
+    const { data, error } = await _sb.from('toolbox_talks').select('*').eq('project_id', currentProject.id).order('created_at', {ascending: false});
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <p>No Toolbox Talks yet. Tap + to add one.</p></div>`;
+      return;
+    }
+    list.innerHTML = data.map(tb => `
+      <div class="rams-item">
+        <div class="rams-icon" style="background:#c47a00">
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="rams-info">
+          <div class="rams-title">${tb.topic || 'Toolbox Talk'}</div>
+          <div class="rams-meta">${tb.foreman || ''} · ${tb.attendees || 0} attendees · ${tb.talk_date ? new Date(tb.talk_date).toLocaleDateString() : ''}</div>
+        </div>
+        <span class="rams-badge badge-approved">✓ Done</span>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = `<div class="empty-state"><p>${e.message}</p></div>`;
+  }
+}
+
+function openNewToolboxModal() {
+  document.getElementById('tb-date').value = new Date().toISOString().slice(0,16);
+  document.getElementById('tb-topic').value = '';
+  document.getElementById('tb-location').value = '';
+  document.getElementById('tb-foreman').value = '';
+  document.getElementById('tb-attendees').value = '';
+  document.getElementById('tb-actions').value = '';
+  document.getElementById('tb-email').value = currentUser.email;
+  // Build risk checkboxes
+  const lang = currentLang;
+  document.getElementById('tb-risks-list').innerHTML = TB_RISKS.map(r => `
+    <label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;font-size:14px;color:var(--navy)">
+      <input type="checkbox" value="${r.id}" style="width:16px;height:16px">
+      ${r[lang] || r.en}
+    </label>`).join('');
+  document.getElementById('modal-toolbox').classList.add('open');
+}
+
+async function submitToolbox() {
+  const topic = document.getElementById('tb-topic').value.trim();
+  const foreman = document.getElementById('tb-foreman').value.trim();
+  if (!topic || !foreman) { showToast('Topic and foreman are required', 'error'); return; }
+
+  const btn = document.getElementById('t-submit-toolbox');
+  btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+  const checkedRisks = [...document.querySelectorAll('#tb-risks-list input:checked')].map(i => i.value);
+
+  try {
+    const { data: tbData, error } = await _sb.from('toolbox_talks').insert({
+      project_id: currentProject.id,
+      project_no: currentProject.project_no,
+      topic,
+      talk_date: document.getElementById('tb-date').value,
+      location: document.getElementById('tb-location').value,
+      foreman,
+      attendees: parseInt(document.getElementById('tb-attendees').value) || 0,
+      risks_discussed: checkedRisks,
+      actions: document.getElementById('tb-actions').value,
+      created_by: currentUser.email,
+    }).select().single();
+    if (error) throw error;
+
+    // Generate and send PDF
+    const email = document.getElementById('tb-email').value.trim();
+    generateToolboxPDF({ ...tbData, checkedRisks }, email);
+
+    closeModal('modal-toolbox');
+    loadToolboxList();
+    showToast('Toolbox Talk saved!', 'success');
+  } catch(e) {
+    showToast('Error: ' + e.message, 'error');
+  }
+  btn.textContent = 'Save & Send PDF'; btn.disabled = false;
+}
+
+function generateToolboxPDF(tb, email) {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W = 210, M = 14;
+  let y = 14;
+
+  // Header
+  pdf.setFillColor(26, 39, 68);
+  pdf.rect(0, 0, W, 24, 'F');
+  pdf.addImage(LOGO_SRC, 'JPEG', M, 3, 18, 18);
+  pdf.setTextColor(255,255,255);
+  pdf.setFontSize(15); pdf.setFont('helvetica', 'bold');
+  pdf.text('NICON INDUSTRIES A/S', M + 22, 11);
+  pdf.setFontSize(10); pdf.setFont('helvetica', 'normal');
+  pdf.text('TOOLBOX TALK', M + 22, 18);
+  y = 32;
+
+  pdf.setTextColor(0,0,0);
+  const section = (title) => {
+    pdf.setFillColor(26,39,68); pdf.rect(M, y, W-M*2, 7, 'F');
+    pdf.setTextColor(255,255,255); pdf.setFontSize(10); pdf.setFont('helvetica','bold');
+    pdf.text(title, M+3, y+5); pdf.setTextColor(0,0,0); y += 9;
+  };
+  const row = (label, value) => {
+    pdf.setFontSize(9); pdf.setFont('helvetica','bold'); pdf.text(label+':', M, y+4);
+    pdf.setFont('helvetica','normal'); pdf.text(String(value||'—'), M+52, y+4);
+    pdf.setDrawColor(230,232,240); pdf.line(M, y+6, W-M, y+6); y += 8;
+  };
+
+  section('GENERAL INFORMATION');
+  row('Project No.', tb.project_no);
+  row('Date & Time', tb.talk_date ? new Date(tb.talk_date).toLocaleString() : '—');
+  row('Location', tb.location);
+  row('Topic / Work Activity', tb.topic);
+  row('Conducted by (Foreman)', tb.foreman);
+  row('Number of Attendees', tb.attendees);
+
+  y += 4;
+  section('KEY RISKS DISCUSSED');
+  const riskNames = (tb.checkedRisks || tb.risks_discussed || []).map(id => {
+    const r = TB_RISKS.find(x => x.id === id);
+    return r ? r.en : id;
+  });
+  if (riskNames.length === 0) {
+    pdf.setFontSize(9); pdf.text('No specific risks selected.', M, y+4); y += 10;
+  } else {
+    riskNames.forEach(name => {
+      pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+      pdf.text('✓  ' + name, M+2, y+4);
+      pdf.setDrawColor(230,232,240); pdf.line(M, y+6, W-M, y+6); y += 8;
+    });
+  }
+
+  if (tb.actions) {
+    y += 4;
+    section('ACTIONS / INSTRUCTIONS');
+    pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+    const lines = pdf.splitTextToSize(tb.actions, W-M*2-4);
+    pdf.text(lines, M+2, y+4); y += lines.length * 5 + 8;
+  }
+
+  y += 4;
+  section('SIGN-OFF');
+  row('Prepared by', tb.foreman);
+  row('Date', new Date().toLocaleDateString());
+
+  // Footer
+  pdf.setFillColor(26,39,68); pdf.rect(0, 287, W, 10, 'F');
+  pdf.setTextColor(255,255,255); pdf.setFontSize(7);
+  pdf.text('Nicon Industries A/S · Sperlingvej 2, 6700 Esbjerg · quality on time', M, 293);
+  pdf.text('Page 1 of 1', W-M-10, 293);
+
+  pdf.save('Toolbox_Talk_' + (tb.project_no||'') + '_' + new Date().toISOString().split('T')[0] + '.pdf');
+
+  // Send via EmailJS if configured
+  const serviceId = localStorage.getItem('emailjs_service') || 'service_cu4drrk';
+  const templateId = localStorage.getItem('emailjs_template') || 'template_4te49i7';
+  const key = localStorage.getItem('emailjs_key') || 'pp3v1Ydvd5TJGKOfs';
+  if (serviceId && templateId && key && email) {
+    emailjs.init(key);
+    emailjs.send(serviceId, templateId, {
+      to_email: email,
+      project_name: tb.topic,
+      project_no: tb.project_no,
+      client: '',
+      date: tb.talk_date,
+      prepared_by: tb.foreman,
+    }).catch(()=>{});
+  }
 }
 
 // ============================================================
