@@ -585,7 +585,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
   <!-- PAGES -->
 
   <!-- PROJECTS PAGE -->
-  <div id="page-projects" class="main-content">
+  <div id="page-projects" class="main-content" style="display:none">
     <div class="page-header">
       <h1 id="t-projects-title">Projects</h1>
       <p id="t-projects-sub">Select a project to continue</p>
@@ -911,6 +911,26 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
           <div class="user-role" id="t-authenticated-user">Authenticated user</div>
         </div>
         <button class="btn-sm btn-danger" onclick="doLogout()" id="t-sign-out-btn">Sign Out</button>
+      </div>
+      <div style="margin-top:14px">
+        <h4 style="font-size:13px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px" id="t-my-profile">My Profile</h4>
+        <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
+        <div class="field"><label id="t-profile-title">Title / Role</label>
+          <select id="profile-title" onchange="saveProfile()">
+            <option value="">— Select title —</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="HSE Manager">HSE Manager</option>
+            <option value="Workshop Manager">Workshop Manager</option>
+            <option value="Project Engineer">Project Engineer</option>
+            <option value="Foreman">Foreman</option>
+            <option value="Welder">Welder</option>
+            <option value="Fitter">Fitter</option>
+            <option value="Painter">Painter</option>
+            <option value="Rigger">Rigger</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
       </div>
       <div id="biometric-settings" style="margin-top:10px;display:none">
         <button class="btn-sm btn-navy" onclick="setupBiometric()" id="t-biometric-setup" style="width:100%;padding:11px">Enable Face ID / Fingerprint</button>
@@ -1499,20 +1519,27 @@ function showScreen(name) {
 }
 
 function showPage(name) {
-  const pages = ['projects','rams','hse-form','incidents','settings'];
+  const pages = ['projects','rams','hse-form','incidents','settings','qhse','toolbox'];
   pages.forEach(p => {
     const el = document.getElementById('page-' + p);
     if (el) el.style.display = 'none';
   });
 
-  document.getElementById('page-' + name).style.display = '';
+  const pageEl = document.getElementById('page-' + name);
+  if (pageEl) pageEl.style.display = '';
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-  const navMap = { projects: 'nav-projects', incidents: 'nav-incidents', settings: 'nav-settings' };
-  if (navMap[name]) document.getElementById(navMap[name]).classList.add('active');
+  const navMap = {
+    projects: 'nav-projects',
+    qhse: 'nav-qhse', toolbox: 'nav-qhse',
+    rams: 'nav-qhse', 'hse-form': 'nav-qhse', incidents: 'nav-qhse',
+    settings: 'nav-settings'
+  };
+  if (navMap[name]) document.getElementById(navMap[name])?.classList.add('active');
 
   if (name === 'incidents') loadIncidents();
-  if (name === 'settings') { loadUsers(); applyRolePermissions(); updateBiometricSettings(); }
+  if (name === 'qhse') loadQHSEPage();
+  if (name === 'settings') { loadUsers(); applyRolePermissions(); updateBiometricSettings(); loadProfile(); }
 }
 
 // ============================================================
@@ -1653,6 +1680,8 @@ function startNewHSE() {
   document.getElementById('hse-client').value = currentProject.client || '';
   document.getElementById('hse-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('hse-pm').value = '';
+  document.getElementById('hse-prepared-by').value = getMyName();
+  document.getElementById('hse-your-email').value = getMyEmail();
   document.getElementById('hse-manager').value = '';
   // Reset accordion - open section 1 only
   for (let i = 1; i <= 7; i++) {
@@ -2544,6 +2573,59 @@ function removeBiometric() {
 }
 
 
+
+// ============================================================
+// USER PROFILE
+// ============================================================
+function saveProfile() {
+  const profile = {
+    name: document.getElementById('profile-name').value,
+    title: document.getElementById('profile-title').value,
+    phone: document.getElementById('profile-phone').value,
+  };
+  localStorage.setItem('userProfile', JSON.stringify(profile));
+  // Also update Supabase profile
+  if (currentUser) {
+    _sb.from('user_profiles').update({
+      full_name: profile.name,
+      title: profile.title,
+      phone: profile.phone,
+    }).eq('id', currentUser.id).then(()=>{});
+  }
+}
+
+function loadProfile() {
+  const stored = localStorage.getItem('userProfile');
+  if (stored) {
+    const p = JSON.parse(stored);
+    const nameEl = document.getElementById('profile-name');
+    const titleEl = document.getElementById('profile-title');
+    const phoneEl = document.getElementById('profile-phone');
+    if (nameEl) nameEl.value = p.name || '';
+    if (titleEl) titleEl.value = p.title || '';
+    if (phoneEl) phoneEl.value = p.phone || '';
+  }
+  // Also try from Supabase
+  if (currentUser) {
+    _sb.from('user_profiles').select('full_name,title,phone').eq('id', currentUser.id).single().then(({data}) => {
+      if (data) {
+        if (document.getElementById('profile-name')) document.getElementById('profile-name').value = data.full_name || '';
+        if (document.getElementById('profile-title')) document.getElementById('profile-title').value = data.title || '';
+        if (document.getElementById('profile-phone')) document.getElementById('profile-phone').value = data.phone || '';
+        localStorage.setItem('userProfile', JSON.stringify({name: data.full_name, title: data.title, phone: data.phone}));
+      }
+    });
+  }
+}
+
+function getMyName() {
+  const stored = localStorage.getItem('userProfile');
+  if (stored) return JSON.parse(stored).name || currentUser?.email || '';
+  return currentUser?.email || '';
+}
+
+function getMyEmail() { return currentUser?.email || ''; }
+
 // ============================================================
 // QHSE PAGE
 // ============================================================
@@ -2645,7 +2727,7 @@ function openNewToolboxModal() {
   document.getElementById('tb-date').value = new Date().toISOString().slice(0,16);
   document.getElementById('tb-topic').value = '';
   document.getElementById('tb-location').value = '';
-  document.getElementById('tb-foreman').value = '';
+  document.getElementById('tb-foreman').value = getMyName();
   document.getElementById('tb-attendees').value = '';
   document.getElementById('tb-actions').value = '';
   document.getElementById('tb-email').value = currentUser.email;
