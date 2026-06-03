@@ -599,7 +599,7 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     </button>
   </div>
 
-  <!-- RAMS PAGE -->
+  <!-- RAMS PAGE / PROJECT DOCUMENTS -->
   <div id="page-rams" class="main-content" style="display:none">
     <div class="page-header">
       <div style="display:flex;align-items:center;gap:10px">
@@ -612,13 +612,49 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         </div>
       </div>
     </div>
-    <div id="rams-list"></div>
-    <button class="fab" onclick="startNewHSE()">
-      <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
+
+    <!-- HSE Plans -->
+    <div style="margin-bottom:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--navy)"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-hse">HSE Plans</span>
+        </div>
+        <button onclick="startNewHSE()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+      </div>
+      <div id="rams-list"></div>
+    </div>
+
+    <div class="divider" style="margin:16px 0"></div>
+
+    <!-- Toolbox Talks -->
+    <div style="margin-bottom:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:#c47a00"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-toolbox">Toolbox Talks</span>
+        </div>
+        <button onclick="openNewToolboxModal()" style="padding:6px 12px;background:#c47a00;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+      </div>
+      <div id="project-toolbox-list"></div>
+    </div>
+
+    <div class="divider" style="margin:16px 0"></div>
+
+    <!-- Incidents -->
+    <div style="margin-bottom:80px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px" id="t-doc-incidents">Incidents</span>
+        </div>
+        <button onclick="openIncidentModal()" style="padding:6px 12px;background:var(--red);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px">+ NEW</button>
+      </div>
+      <div id="project-incidents-list"></div>
+    </div>
   </div>
 
-  <!-- HSE FORM PAGE -->
+    <!-- HSE FORM PAGE -->
   <div id="page-hse-form" class="main-content" style="display:none">
     <div class="page-header">
       <div style="display:flex;align-items:center;gap:10px">
@@ -797,55 +833,56 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
   <div id="page-qhse" class="main-content" style="display:none">
     <div class="page-header">
       <h1 id="t-qhse-title">QHSE</h1>
-      <p id="t-qhse-sub">Select a project first, then choose a document type</p>
+      <p id="t-qhse-sub">Choose a document type</p>
     </div>
 
-    <!-- Project selector -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-body" style="padding:12px 16px">
-        <label style="font-size:11px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:6px" id="t-qhse-project-lbl">Project</label>
-        <select id="qhse-project-select" onchange="onQHSEProjectChange()" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-light);border-radius:var(--radius);font-family:'Barlow',sans-serif;font-size:15px;color:var(--text);background:var(--white)">
-          <option value="">— Select project —</option>
-        </select>
+    <!-- Document type tiles - choose first -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+
+      <div class="qhse-tile" onclick="selectQHSEType('hse')">
+        <div class="qhse-tile-icon" style="background:#1a2744">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="qhse-tile-label" id="t-tile-hse">HSE Plan</div>
       </div>
+
+      <div class="qhse-tile" onclick="selectQHSEType('toolbox')">
+        <div class="qhse-tile-icon" style="background:#c47a00">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div class="qhse-tile-label" id="t-tile-toolbox">Toolbox Talk</div>
+      </div>
+
+      <div class="qhse-tile" onclick="selectQHSEType('incidents')">
+        <div class="qhse-tile-icon" style="background:#d0021b">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="qhse-tile-label" id="t-tile-incidents">Incidents</div>
+      </div>
+
     </div>
 
-    <!-- Document type tiles -->
-    <div id="qhse-tiles" style="opacity:0.4;pointer-events:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-
-        <!-- HSE Plan tile -->
-        <div class="qhse-tile" onclick="openQHSESection('hse')">
-          <div class="qhse-tile-icon" style="background:#1a2744">
-            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <!-- Project selector - shown after type selected -->
+    <div id="qhse-project-panel" style="display:none">
+      <div class="card">
+        <div class="card-body" style="padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div id="qhse-selected-type-icon" style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+            <div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--navy)" id="qhse-selected-type-label"></div>
+              <div style="font-size:12px;color:var(--gray)" id="t-qhse-project-lbl">Select a project</div>
+            </div>
           </div>
-          <div class="qhse-tile-label" id="t-tile-hse">HSE Plan</div>
-          <div class="qhse-tile-count" id="qhse-count-hse">—</div>
+          <select id="qhse-project-select" style="width:100%;padding:11px 13px;border:1.5px solid var(--gray-light);border-radius:var(--radius);font-family:'Barlow',sans-serif;font-size:15px;color:var(--text);background:var(--white)">
+            <option value="">— Select project —</option>
+          </select>
+          <button onclick="goToQHSESection()" style="width:100%;margin-top:12px;padding:13px;border-radius:var(--radius);border:none;cursor:pointer;background:var(--navy);color:white;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase" id="t-qhse-go">Open →</button>
         </div>
-
-        <!-- Toolbox Talk tile -->
-        <div class="qhse-tile" onclick="openQHSESection('toolbox')">
-          <div class="qhse-tile-icon" style="background:#c47a00">
-            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          </div>
-          <div class="qhse-tile-label" id="t-tile-toolbox">Toolbox Talk</div>
-          <div class="qhse-tile-count" id="qhse-count-toolbox">—</div>
-        </div>
-
-        <!-- Incidents tile -->
-        <div class="qhse-tile" onclick="openQHSESection('incidents')">
-          <div class="qhse-tile-icon" style="background:#d0021b">
-            <svg width="26" height="26" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <div class="qhse-tile-label" id="t-tile-incidents">Incidents</div>
-          <div class="qhse-tile-count" id="qhse-count-incidents">—</div>
-        </div>
-
       </div>
     </div>
   </div>
 
-  <!-- TOOLBOX TALK LIST PAGE -->
+    <!-- TOOLBOX TALK LIST PAGE -->
   <div id="page-toolbox" class="main-content" style="display:none">
     <div class="page-header">
       <div style="display:flex;align-items:center;gap:10px">
@@ -1173,6 +1210,10 @@ const T = {
     'tb-email': 'Send PDF to (email)',
     'cancel-tb': 'Cancel',
     'submit-toolbox': 'Save & Send PDF',
+    
+    'doc-hse': 'HSE Plans',
+    'doc-toolbox': 'Toolbox Talks',
+    'doc-incidents': 'Incidents',
     'remember-me': 'Remember me on this device',
     'biometric-btn': 'Sign in with Face ID / Fingerprint',
     'biometric-setup': 'Enable Face ID / Fingerprint for this device',
@@ -1236,6 +1277,10 @@ const T = {
     'tb-email': 'Send PDF til (e-mail)',
     'cancel-tb': 'Annuller',
     'submit-toolbox': 'Gem & Send PDF',
+    
+    'doc-hse': 'HSE Planer',
+    'doc-toolbox': 'Toolbox Talks',
+    'doc-incidents': 'Hændelser',
     'remember-me': 'Husk mig på denne enhed',
     'biometric-btn': 'Log ind med Face ID / fingeraftryk',
     'biometric-setup': 'Aktiver Face ID / fingeraftryk på denne enhed',
@@ -1292,6 +1337,10 @@ const T = {
     'tb-email': 'Wyślij PDF na (e-mail)',
     'cancel-tb': 'Anuluj',
     'submit-toolbox': 'Zapisz i wyślij PDF',
+    
+    'doc-hse': 'Plany BHP',
+    'doc-toolbox': 'Odprawy BHP',
+    'doc-incidents': 'Zdarzenia',
     'remember-me': 'Zapamiętaj mnie na tym urządzeniu',
     'biometric-btn': 'Zaloguj się przez Face ID / odcisk palca',
     'biometric-setup': 'Włącz Face ID / odcisk palca na tym urządzeniu',
@@ -1347,6 +1396,10 @@ const T = {
     'tb-email': 'Trimite PDF la (e-mail)',
     'cancel-tb': 'Anulare',
     'submit-toolbox': 'Salvează și trimite PDF',
+    
+    'doc-hse': 'Planuri SSM',
+    'doc-toolbox': 'Toolbox Talks',
+    'doc-incidents': 'Incidente',
     'remember-me': 'Ține-mă minte pe acest dispozitiv',
     'biometric-btn': 'Conectare cu Face ID / amprentă',
     'biometric-setup': 'Activați Face ID / amprentă pe acest dispozitiv',
@@ -1402,6 +1455,10 @@ const T = {
     'tb-email': 'Siųsti PDF (el. paštas)',
     'cancel-tb': 'Atšaukti',
     'submit-toolbox': 'Išsaugoti ir siųsti PDF',
+    
+    'doc-hse': 'DSS Planai',
+    'doc-toolbox': 'Toolbox pokalbiai',
+    'doc-incidents': 'Incidentai',
     'remember-me': 'Prisiminti mane šiame įrenginyje',
     'biometric-btn': 'Prisijungti su Face ID / piršto antspaudu',
     'biometric-setup': 'Įjungti Face ID / piršto antspaudą šiame įrenginyje',
@@ -1603,7 +1660,7 @@ async function openProject(projectId) {
   if (error || !data) return;
   currentProject = data;
   document.getElementById('rams-project-title').textContent = currentProject.name || currentProject.project_no;
-  document.getElementById('rams-project-sub').textContent = `#${currentProject.project_no} · ${currentProject.client}`;
+  document.getElementById('rams-project-sub').textContent = '#' + currentProject.project_no + ' · ' + (currentProject.client || '');
   showPage('rams');
   loadRams();
 }
@@ -1640,36 +1697,73 @@ async function saveProject() {
 // RAMS LIST
 // ============================================================
 async function loadRams() {
-  const list = document.getElementById('rams-list');
-  list.innerHTML = '<div class="loading">Loading...</div>';
+  const hseList = document.getElementById('rams-list');
+  const tbList = document.getElementById('project-toolbox-list');
+  const incList = document.getElementById('project-incidents-list');
+
+  hseList.innerHTML = '<div class="loading" style="font-size:13px;padding:10px 0">Loading...</div>';
+  tbList.innerHTML = '<div class="loading" style="font-size:13px;padding:10px 0">Loading...</div>';
+  incList.innerHTML = '<div class="loading" style="font-size:13px;padding:10px 0">Loading...</div>';
 
   try {
-    const { data: items, error } = await _sb.from('hse_plans')
-      .select('*')
-      .eq('project_id', currentProject.id)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
+    const [hseRes, tbRes, incRes] = await Promise.all([
+      _sb.from('hse_plans').select('*').eq('project_id', currentProject.id).order('created_at', {ascending:false}),
+      _sb.from('toolbox_talks').select('*').eq('project_id', currentProject.id).order('created_at', {ascending:false}),
+      _sb.from('incidents').select('*').eq('project_id', currentProject.id).order('created_at', {ascending:false}),
+    ]);
 
-    if (!items || items.length === 0) {
-      list.innerHTML = `<div class="empty-state">
-        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <p>No HSE Plans yet. Tap + to create one.</p></div>`;
-      return;
+    // HSE Plans
+    if (!hseRes.data || hseRes.data.length === 0) {
+      hseList.innerHTML = '<p style="font-size:13px;color:var(--gray);padding:8px 0">No HSE Plans yet.</p>';
+    } else {
+      hseList.innerHTML = hseRes.data.map(item => `
+        <div class="rams-item" onclick="openHSE('${item.id}')">
+          <div class="rams-icon" style="background:var(--navy)">
+            <svg width="20" height="20" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="rams-info">
+            <div class="rams-title">HSE Plan – ${item.plan_date || ''}</div>
+            <div class="rams-meta">${item.prepared_by || ''} · ${item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</div>
+          </div>
+          <span class="rams-badge ${item.approved ? 'badge-approved' : 'badge-draft'}">${item.approved ? '✓' : 'Draft'}</span>
+        </div>`).join('');
     }
 
-    list.innerHTML = items.map(item => `
-      <div class="rams-item" onclick="openHSE('${item.id}')">
-        <div class="rams-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <div class="rams-info">
-          <div class="rams-title">HSE Plan – ${item.plan_date || item.id}</div>
-          <div class="rams-meta">${item.prepared_by || currentUser.email} · ${item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</div>
-        </div>
-        <span class="rams-badge ${item.approved ? 'badge-approved' : 'badge-draft'}">${item.approved ? '✓ Approved' : 'Draft'}</span>
-      </div>`).join('');
+    // Toolbox Talks
+    if (!tbRes.data || tbRes.data.length === 0) {
+      tbList.innerHTML = '<p style="font-size:13px;color:var(--gray);padding:8px 0">No Toolbox Talks yet.</p>';
+    } else {
+      tbList.innerHTML = tbRes.data.map(tb => `
+        <div class="rams-item">
+          <div class="rams-icon" style="background:#c47a00">
+            <svg width="20" height="20" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="rams-info">
+            <div class="rams-title">${tb.topic || 'Toolbox Talk'}</div>
+            <div class="rams-meta">${tb.foreman || ''} · ${tb.attendees || 0} att. · ${tb.talk_date ? new Date(tb.talk_date).toLocaleDateString() : ''}</div>
+          </div>
+          <span class="rams-badge badge-approved">✓</span>
+        </div>`).join('');
+    }
+
+    // Incidents
+    if (!incRes.data || incRes.data.length === 0) {
+      incList.innerHTML = '<p style="font-size:13px;color:var(--gray);padding:8px 0">No incidents reported.</p>';
+    } else {
+      incList.innerHTML = incRes.data.map(inc => `
+        <div class="rams-item">
+          <div class="rams-icon" style="background:var(--red)">
+            <svg width="20" height="20" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="rams-info">
+            <div class="rams-title">${(inc.type||'Incident').toUpperCase().replace(/-/g,' ')}</div>
+            <div class="rams-meta">${inc.location || ''} · ${inc.reporter || ''} · ${inc.incident_date ? new Date(inc.incident_date).toLocaleDateString() : ''}</div>
+          </div>
+        </div>`).join('');
+    }
+
   } catch(e) {
-    list.innerHTML = `<div class="empty-state"><p>${e.message}</p></div>`;
+    hseList.innerHTML = `<p style="font-size:13px;color:var(--red)">${e.message}</p>`;
   }
 }
 
@@ -2642,8 +2736,35 @@ const TB_RISKS = [
   { id:'emergency', en:'Emergency Procedures',da:'Nødprocedurer',  pl:'Procedury awaryjne',  ro:'Proceduri urgență',  lt:'Avarinės procedūros' },
 ];
 
+let selectedQHSEType = null;
+
 async function loadQHSEPage() {
-  // Load open projects into selector
+  // Reset to type selection view
+  document.getElementById('qhse-project-panel').style.display = 'none';
+  selectedQHSEType = null;
+}
+
+async function selectQHSEType(type) {
+  selectedQHSEType = type;
+  const panel = document.getElementById('qhse-project-panel');
+  const icon = document.getElementById('qhse-selected-type-icon');
+  const label = document.getElementById('qhse-selected-type-label');
+
+  const typeConfig = {
+    hse:       { color: '#1a2744', label: { en:'HSE Plan', da:'HSE Plan', pl:'Plan BHP', ro:'Plan SSM', lt:'DSS planas' },
+                 svg: '<svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' },
+    toolbox:   { color: '#c47a00', label: { en:'Toolbox Talk', da:'Toolbox Talk', pl:'Odprawa BHP', ro:'Toolbox Talk', lt:'Toolbox pokalbis' },
+                 svg: '<svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>' },
+    incidents: { color: '#d0021b', label: { en:'Incidents', da:'Hændelser', pl:'Zdarzenia', ro:'Incidente', lt:'Incidentai' },
+                 svg: '<svg width="20" height="20" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' },
+  };
+
+  const cfg = typeConfig[type];
+  icon.style.background = cfg.color;
+  icon.innerHTML = cfg.svg;
+  label.textContent = cfg.label[currentLang] || cfg.label.en;
+
+  // Load projects
   const sel = document.getElementById('qhse-project-select');
   sel.innerHTML = '<option value="">— Select project —</option>';
   try {
@@ -2656,39 +2777,18 @@ async function loadQHSEPage() {
       sel.appendChild(opt);
     });
   } catch(e) {}
-  if (currentProject) { sel.value = currentProject.id; onQHSEProjectChange(); }
+
+  panel.style.display = '';
 }
 
-async function onQHSEProjectChange() {
+async function goToQHSESection() {
   const sel = document.getElementById('qhse-project-select');
-  const tiles = document.getElementById('qhse-tiles');
-  if (!sel.value) { tiles.style.opacity = '0.4'; tiles.style.pointerEvents = 'none'; return; }
-  // Load selected project
+  if (!sel.value) { showToast('Select a project first', 'error'); return; }
   const { data } = await _sb.from('projects').select('*').eq('id', sel.value).single();
   if (data) currentProject = data;
-  tiles.style.opacity = '1'; tiles.style.pointerEvents = '';
-  // Load counts
-  try {
-    const [hse, tb, inc] = await Promise.all([
-      _sb.from('hse_plans').select('id', {count:'exact'}).eq('project_id', sel.value),
-      _sb.from('toolbox_talks').select('id', {count:'exact'}).eq('project_id', sel.value),
-      _sb.from('incidents').select('id', {count:'exact'}).eq('project_id', sel.value),
-    ]);
-    document.getElementById('qhse-count-hse').textContent = (hse.count || 0) + ' doc' + (hse.count !== 1 ? 's' : '');
-    document.getElementById('qhse-count-toolbox').textContent = (tb.count || 0) + ' talk' + (tb.count !== 1 ? 's' : '');
-    document.getElementById('qhse-count-incidents').textContent = (inc.count || 0) + ' report' + (inc.count !== 1 ? 's' : '');
-  } catch(e) {
-    document.getElementById('qhse-count-hse').textContent = '—';
-    document.getElementById('qhse-count-toolbox').textContent = '—';
-    document.getElementById('qhse-count-incidents').textContent = '—';
-  }
-}
-
-function openQHSESection(type) {
-  if (!currentProject) { showToast('Select a project first', 'error'); return; }
-  if (type === 'hse') { showPage('rams'); loadRams(); }
-  else if (type === 'toolbox') { showPage('toolbox'); loadToolboxList(); }
-  else if (type === 'incidents') { showPage('incidents'); loadIncidents(); }
+  if (selectedQHSEType === 'hse') { showPage('rams'); loadRams(); }
+  else if (selectedQHSEType === 'toolbox') { showPage('toolbox'); loadToolboxList(); }
+  else if (selectedQHSEType === 'incidents') { showPage('incidents'); loadIncidents(); }
 }
 
 // ============================================================
