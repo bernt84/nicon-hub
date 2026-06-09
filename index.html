@@ -667,7 +667,9 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         </div>
         <button onclick="showPage('wps')" style="padding:6px 12px;background:#1a7a4a;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px" id="t-open-wps">OPEN FOLDER →</button>
       </div>
-      <div id="project-wps-preview"></div>
+      <div id="project-wps-preview">
+        <p style="font-size:13px;color:var(--gray)">Loading...</p>
+      </div>
     </div>
   </div>
 
@@ -1004,6 +1006,27 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
     </div>
 
     <div class="settings-section">
+      <h3 id="t-my-profile">My Profile</h3>
+      <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
+      <div class="field"><label id="t-profile-title">Title / Role</label>
+        <select id="profile-title" onchange="saveProfile()">
+          <option value="">— Select title —</option>
+          <option value="Project Manager">Project Manager</option>
+          <option value="HSE Manager">HSE Manager</option>
+          <option value="Workshop Manager">Workshop Manager</option>
+          <option value="Project Engineer">Project Engineer</option>
+          <option value="Foreman">Foreman</option>
+          <option value="Welder">Welder</option>
+          <option value="Fitter">Fitter</option>
+          <option value="Painter">Painter</option>
+          <option value="Rigger">Rigger</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
+    </div>
+
+    <div class="settings-section">
       <h3 id="t-emailjs-config">Email Configuration (EmailJS)</h3>
       <div class="card">
         <div class="card-body">
@@ -1046,26 +1069,6 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
         <button class="btn-sm btn-danger" onclick="doLogout()" id="t-sign-out-btn">Sign Out</button>
       </div>
 
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--gray-light)">
-        <div style="font-size:12px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px" id="t-my-profile">My Profile</div>
-        <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
-        <div class="field"><label id="t-profile-title">Title / Role</label>
-          <select id="profile-title" onchange="saveProfile()">
-            <option value="">— Select title —</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="HSE Manager">HSE Manager</option>
-            <option value="Workshop Manager">Workshop Manager</option>
-            <option value="Project Engineer">Project Engineer</option>
-            <option value="Foreman">Foreman</option>
-            <option value="Welder">Welder</option>
-            <option value="Fitter">Fitter</option>
-            <option value="Painter">Painter</option>
-            <option value="Rigger">Rigger</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
-      </div>
       <div id="biometric-settings" style="margin-top:10px;display:none">
         <button class="btn-sm btn-navy" onclick="setupBiometric()" id="t-biometric-setup" style="width:100%;padding:11px">Enable Face ID / Fingerprint</button>
       </div>
@@ -2932,11 +2935,20 @@ async function loadWPSPreview() {
   if (!preview || !currentProject) return;
   try {
     const { data: folder } = await _sb.from('wps_folders').select('id,is_active').eq('project_id', currentProject.id).single();
-    if (!folder) { preview.innerHTML = '<p style="font-size:13px;color:var(--gray)">No WPS folder yet.</p>'; return; }
-    const { data: docs } = await _sb.from('wps_documents').select('id,filename').eq('folder_id', folder.id).order('created_at',{ascending:false}).limit(3);
-    const count = docs ? docs.length : 0;
-    preview.innerHTML = '<p style="font-size:13px;color:var(--gray-dark)">' + count + ' document(s) · Link: <span style="color:' + (folder.is_active ? 'var(--success)' : 'var(--red)') + ';font-weight:700">' + (folder.is_active ? 'Active' : 'Inactive') + '</span></p>';
-  } catch(e) { preview.innerHTML = ''; }
+    if (!folder) {
+      preview.innerHTML = '<p style="font-size:13px;color:var(--gray)">No documents yet.</p>';
+      return;
+    }
+    const { data: docs, count } = await _sb.from('wps_documents').select('id,filename', {count:'exact'}).eq('folder_id', folder.id).order('created_at',{ascending:false}).limit(3);
+    const total = count || (docs ? docs.length : 0);
+    const linkStatus = folder.is_active
+      ? '<span style="color:var(--success);font-weight:700">🔗 Link active</span>'
+      : '<span style="color:var(--gray);font-weight:700">🔗 Link inactive</span>';
+    const fileList = docs && docs.length > 0
+      ? docs.map(d => '<div style="font-size:12px;color:var(--gray-dark);padding:3px 0;display:flex;align-items:center;gap:6px"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>' + d.filename + '</div>').join('')
+      : '<p style="font-size:12px;color:var(--gray)">No files uploaded yet.</p>';
+    preview.innerHTML = '<div style="margin-bottom:6px">' + linkStatus + ' · ' + total + ' file(s)</div>' + fileList;
+  } catch(e) { preview.innerHTML = '<p style="font-size:13px;color:var(--gray)">No WPS folder yet.</p>'; }
 }
 
 // ── PUBLIC WPS PAGE (no login) ────────────────────────────────────────────────
