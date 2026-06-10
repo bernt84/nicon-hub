@@ -3585,7 +3585,7 @@ async function importProjectsFromExcel(input) {
             project_no: projNo,
             client: customer,
             name: desc,
-            closed: status === 'FF',
+            closed: status !== 'On',
             created_by: 'excel-import',
           });
         }
