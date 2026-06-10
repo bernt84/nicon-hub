@@ -1026,6 +1026,32 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
       <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
     </div>
 
+    <div class="settings-section admin-only" id="section-projects-mgmt" style="display:none">
+      <h3>Project Management</h3>
+
+      <!-- Add single project -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Add Single Project</div>
+        <div class="field"><label>Project No.</label><input type="text" id="new-single-proj-no" placeholder="e.g. 3619906"></div>
+        <div class="field"><label>Project Name</label><input type="text" id="new-single-proj-name" placeholder="Project description"></div>
+        <div class="field"><label>Client</label><input type="text" id="new-single-proj-client" placeholder="Client name"></div>
+        <button onclick="addSingleProject()" style="width:100%;padding:11px;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-transform:uppercase">+ Add Project</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Import from Excel -->
+      <div style="margin-top:14px">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Import from Excel</div>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:10px">Upload your Nicon project Excel file. Existing projects will be updated, new ones added.</p>
+        <label style="display:block;width:100%;padding:11px;background:var(--off-white);color:var(--navy);border:1.5px dashed var(--gray-light);border-radius:var(--radius);text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-transform:uppercase">
+          <input type="file" id="excel-import-input" accept=".xlsx,.xls" style="display:none" onchange="importProjectsFromExcel(this)">
+          ↑ Upload Excel File
+        </label>
+        <div id="excel-import-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--gray-dark);text-align:center;padding:8px"></div>
+      </div>
+    </div>
+
     <div class="settings-section">
       <h3 id="t-emailjs-config">Email Configuration (EmailJS)</h3>
       <div class="card">
@@ -3508,6 +3534,88 @@ async function createUser() {
   } catch(e) { showToast('Error: ' + e.message, 'error'); }
 }
 
+
+
+// ============================================================
+// PROJECT MANAGEMENT (Settings)
+// ============================================================
+async function addSingleProject() {
+  const no = document.getElementById('new-single-proj-no').value.trim();
+  const name = document.getElementById('new-single-proj-name').value.trim();
+  const client = document.getElementById('new-single-proj-client').value.trim();
+  if (!no) { showToast('Enter a project number', 'error'); return; }
+
+  try {
+    const { error } = await _sb.from('projects').upsert({
+      project_no: no, name, client, closed: false, created_by: currentUser.email
+    }, { onConflict: 'project_no' });
+    if (error) throw error;
+    document.getElementById('new-single-proj-no').value = '';
+    document.getElementById('new-single-proj-name').value = '';
+    document.getElementById('new-single-proj-client').value = '';
+    showToast('Project added!', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function importProjectsFromExcel(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const progress = document.getElementById('excel-import-progress');
+  progress.style.display = 'block';
+  progress.textContent = 'Reading file...';
+
+  try {
+    const data = await file.arrayBuffer();
+    // Use SheetJS if available, otherwise parse manually
+    if (typeof XLSX !== 'undefined') {
+      const wb = XLSX.read(data, { type: 'array' });
+      // Find the main sheet
+      const sheetName = wb.SheetNames.find(n => n.includes('IGANGVÆRENDE') || n.includes('Project')) || wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+      const projects = [];
+      for (const row of rows) {
+        const projNo = String(row[0] || '').trim();
+        const customer = String(row[1] || '').trim();
+        const desc = String(row[2] || '').trim();
+        const status = String(row[7] || '').trim();
+        if (/^\d{7}$/.test(projNo) && !customer.toLowerCase().includes('annulleret')) {
+          projects.push({
+            project_no: projNo,
+            client: customer,
+            name: desc,
+            closed: status === 'FF',
+            created_by: 'excel-import',
+          });
+        }
+      }
+
+      if (projects.length === 0) { progress.textContent = 'No valid projects found in file.'; return; }
+      progress.textContent = 'Importing ' + projects.length + ' projects...';
+
+      // Batch upsert in chunks of 100
+      let imported = 0;
+      for (let i = 0; i < projects.length; i += 100) {
+        const chunk = projects.slice(i, i + 100);
+        const { error } = await _sb.from('projects').upsert(chunk, { onConflict: 'project_no' });
+        if (error) throw error;
+        imported += chunk.length;
+        progress.textContent = 'Imported ' + imported + ' / ' + projects.length + '...';
+      }
+
+      const active = projects.filter(p => !p.closed).length;
+      progress.textContent = '✓ Done! ' + projects.length + ' projects imported (' + active + ' active, ' + (projects.length - active) + ' closed).';
+      showToast('Import complete!', 'success');
+      input.value = '';
+    } else {
+      progress.textContent = 'Excel library not loaded. Please try again.';
+    }
+  } catch(e) {
+    progress.textContent = 'Error: ' + e.message;
+    showToast('Import failed', 'error');
+  }
+}
 
 // ============================================================
 // FAVOURITES
