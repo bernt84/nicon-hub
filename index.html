@@ -1739,18 +1739,31 @@ async function loadProjects() {
       return;
     }
 
-    list.innerHTML = projects.map(p => `
+    // Sort: favourites first
+    const favs = JSON.parse(localStorage.getItem('fav_projects') || '[]');
+    projects.sort((a, b) => {
+      const aF = favs.includes(a.id) ? 0 : 1;
+      const bF = favs.includes(b.id) ? 0 : 1;
+      return aF - bF || a.project_no.localeCompare(b.project_no);
+    });
+
+    list.innerHTML = projects.map(p => {
+      const isFav = favs.includes(p.id);
+      return `
       <div class="project-card" onclick="openProject('${p.id}')">
-        <div>
+        <div style="flex:1">
           <div class="proj-no">#${p.project_no || p.id}</div>
           <div class="proj-name">${p.name || '—'}</div>
           <div class="proj-client">${p.client || '—'}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span class="proj-status ${p.closed ? 'status-closed' : 'status-active'}">${p.closed ? 'Closed' : 'Active'}</span>
+          <button onclick="toggleFav(event,'${p.id}')" style="background:none;border:none;cursor:pointer;padding:4px;line-height:0">
+            <svg width="20" height="20" fill="${isFav ? '#f5a623' : 'none'}" stroke="${isFav ? '#f5a623' : 'var(--gray)'}" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </button>
           <svg class="proj-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
 
   } catch(e) {
@@ -3493,6 +3506,20 @@ async function createUser() {
     showToast('User created!', 'success');
     loadUsers();
   } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+
+// ============================================================
+// FAVOURITES
+// ============================================================
+function toggleFav(e, projectId) {
+  e.stopPropagation();
+  const favs = JSON.parse(localStorage.getItem('fav_projects') || '[]');
+  const idx = favs.indexOf(projectId);
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.push(projectId);
+  localStorage.setItem('fav_projects', JSON.stringify(favs));
+  loadProjects();
 }
 
 // ============================================================
