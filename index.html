@@ -593,6 +593,11 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
       <h1 id="t-projects-title">Projects</h1>
       <p id="t-projects-sub">Select a project to continue</p>
     </div>
+    <div style="position:relative;margin-bottom:14px">
+      <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none" width="16" height="16" fill="none" stroke="var(--gray)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="project-search" placeholder="Search projects..." oninput="filterProjects(this.value)"
+        style="width:100%;padding:11px 13px 11px 38px;border:1.5px solid var(--gray-light);border-radius:var(--radius);font-family:'Barlow',sans-serif;font-size:15px;color:var(--text);background:var(--white);outline:none">
+    </div>
 
     <div id="projects-list">
       <div class="loading" id="t-loading">Loading...</div>
@@ -1005,106 +1010,117 @@ html, body { height: 100%; font-family: 'Barlow', sans-serif; background: var(--
       <h1 id="t-settings-title">Settings</h1>
     </div>
 
-    <div class="settings-section">
-      <h3 id="t-my-profile">My Profile</h3>
-      <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
-      <div class="field"><label id="t-profile-title">Title / Role</label>
-        <select id="profile-title" onchange="saveProfile()">
-          <option value="">— Select title —</option>
-          <option value="Project Manager">Project Manager</option>
-          <option value="HSE Manager">HSE Manager</option>
-          <option value="Workshop Manager">Workshop Manager</option>
-          <option value="Project Engineer">Project Engineer</option>
-          <option value="Foreman">Foreman</option>
-          <option value="Welder">Welder</option>
-          <option value="Fitter">Fitter</option>
-          <option value="Painter">Painter</option>
-          <option value="Rigger">Rigger</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
+    <!-- Settings tabs -->
+    <div style="display:flex;gap:0;background:var(--gray-light);border-radius:var(--radius);padding:4px;margin-bottom:18px">
+      <button onclick="showSettingsTab('user')" id="stab-user"
+        style="flex:1;padding:9px;border:none;cursor:pointer;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:var(--navy);color:white;transition:all 0.2s">
+        👤 User
+      </button>
+      <button onclick="showSettingsTab('project')" id="stab-project"
+        style="flex:1;padding:9px;border:none;cursor:pointer;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:transparent;color:var(--gray-dark);transition:all 0.2s">
+        📁 Projects
+      </button>
     </div>
 
-    <div class="settings-section admin-only" id="section-projects-mgmt" style="display:none">
-      <h3>Project Management</h3>
+    <!-- USER TAB -->
+    <div id="settings-tab-user">
 
-      <!-- Add single project -->
-      <div style="margin-bottom:16px">
-        <div style="font-size:12px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Add Single Project</div>
+      <div class="settings-section">
+        <h3 id="t-my-profile">My Profile</h3>
+        <div class="field"><label id="t-profile-name">Full Name</label><input type="text" id="profile-name" placeholder="First Last" oninput="saveProfile()"></div>
+        <div class="field"><label id="t-profile-title">Title / Role</label>
+          <select id="profile-title" onchange="saveProfile()">
+            <option value="">— Select title —</option>
+            <option value="Project Manager">Project Manager</option>
+            <option value="HSE Manager">HSE Manager</option>
+            <option value="Workshop Manager">Workshop Manager</option>
+            <option value="Project Engineer">Project Engineer</option>
+            <option value="Foreman">Foreman</option>
+            <option value="Welder">Welder</option>
+            <option value="Fitter">Fitter</option>
+            <option value="Painter">Painter</option>
+            <option value="Rigger">Rigger</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field"><label id="t-profile-phone">Mobile Phone</label><input type="tel" id="profile-phone" placeholder="+45 1234 5678" oninput="saveProfile()"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3 id="t-emailjs-config">Email Configuration (EmailJS)</h3>
+        <div class="card">
+          <div class="card-body">
+            <div class="field">
+              <label>EmailJS Service ID</label>
+              <input type="text" id="cfg-emailjs-service" placeholder="service_xxxxxxx" oninput="saveConfig()">
+            </div>
+            <div class="field">
+              <label>EmailJS Template ID</label>
+              <input type="text" id="cfg-emailjs-template" placeholder="template_xxxxxxx" oninput="saveConfig()">
+            </div>
+            <div class="field">
+              <label>EmailJS Public Key</label>
+              <input type="text" id="cfg-emailjs-key" placeholder="xxxxxxxxxxxxxxxxxxxx" oninput="saveConfig()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section" id="section-users">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <h3 id="t-user-mgmt" style="margin-bottom:0;border-bottom:none;padding-bottom:0">User Management</h3>
+          <button class="btn-red" onclick="openNewUserModal()" id="admin-only-btn" style="display:none">+ Add User</button>
+        </div>
+        <div id="users-list"><div class="loading" style="font-size:13px;padding:20px 0">Loading users...</div></div>
+      </div>
+
+      <div class="settings-section">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h3 id="t-signed-in-as">Signed in as</h3>
+        </div>
+        <div class="user-item">
+          <div class="user-info">
+            <div class="user-email" id="settings-user-email">—</div>
+            <div class="user-role" id="t-authenticated-user">Authenticated user</div>
+          </div>
+          <button class="btn-sm btn-danger" onclick="doLogout()" id="t-sign-out-btn">Sign Out</button>
+        </div>
+        <div id="biometric-settings" style="margin-top:10px;display:none">
+          <button class="btn-sm btn-navy" onclick="setupBiometric()" id="t-biometric-setup" style="width:100%;padding:11px">Enable Face ID / Fingerprint</button>
+        </div>
+        <div id="biometric-remove-container" style="margin-top:8px;display:none">
+          <button class="btn-sm btn-danger" onclick="removeBiometric()" id="t-biometric-remove" style="width:100%;padding:11px">Remove biometric login</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PROJECT TAB -->
+    <div id="settings-tab-project" style="display:none">
+
+      <div class="settings-section admin-only" id="section-projects-mgmt" style="display:none">
+        <h3>Add Single Project</h3>
         <div class="field"><label>Project No.</label><input type="text" id="new-single-proj-no" placeholder="e.g. 3619906"></div>
         <div class="field"><label>Project Name</label><input type="text" id="new-single-proj-name" placeholder="Project description"></div>
         <div class="field"><label>Client</label><input type="text" id="new-single-proj-client" placeholder="Client name"></div>
         <button onclick="addSingleProject()" style="width:100%;padding:11px;background:var(--navy);color:white;border:none;border-radius:var(--radius);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-transform:uppercase">+ Add Project</button>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- Import from Excel -->
-      <div style="margin-top:14px">
-        <div style="font-size:12px;font-weight:700;color:var(--gray-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Import from Excel</div>
-        <p style="font-size:12px;color:var(--gray);margin-bottom:10px">Upload your Nicon project Excel file. Existing projects will be updated, new ones added.</p>
+      <div class="settings-section admin-only" style="display:none">
+        <h3>Import from Excel</h3>
+        <p style="font-size:12px;color:var(--gray);margin-bottom:10px">Upload your Nicon project Excel file. Active projects (status = On) will be imported.</p>
         <label style="display:block;width:100%;padding:11px;background:var(--off-white);color:var(--navy);border:1.5px dashed var(--gray-light);border-radius:var(--radius);text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;text-transform:uppercase">
           <input type="file" id="excel-import-input" accept=".xlsx,.xls" style="display:none" onchange="importProjectsFromExcel(this)">
           ↑ Upload Excel File
         </label>
         <div id="excel-import-progress" style="display:none;margin-top:8px;font-size:13px;color:var(--gray-dark);text-align:center;padding:8px"></div>
       </div>
-    </div>
-
-    <div class="settings-section">
-      <h3 id="t-emailjs-config">Email Configuration (EmailJS)</h3>
-      <div class="card">
-        <div class="card-body">
-          <div class="field">
-            <label>EmailJS Service ID</label>
-            <input type="text" id="cfg-emailjs-service" placeholder="service_xxxxxxx" oninput="saveConfig()">
-          </div>
-          <div class="field">
-            <label>EmailJS Template ID</label>
-            <input type="text" id="cfg-emailjs-template" placeholder="template_xxxxxxx" oninput="saveConfig()">
-          </div>
-          <div class="field">
-            <label>EmailJS Public Key</label>
-            <input type="text" id="cfg-emailjs-key" placeholder="xxxxxxxxxxxxxxxxxxxx" oninput="saveConfig()">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="settings-section" id="section-users">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <h3 id="t-user-mgmt" style="margin-bottom:0;border-bottom:none;padding-bottom:0">User Management</h3>
-        <button class="btn-red" onclick="openNewUserModal()" id="admin-only-btn" style="display:none">+ Add User</button>
-      </div>
-      <div id="users-list"><div class="loading" style="font-size:13px;padding:20px 0">Loading users...</div></div>
-    </div>
-
 
     </div>
 
-    <div class="settings-section">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <h3 id="t-signed-in-as">Signed in as</h3>
-      </div>
-      <div class="user-item">
-        <div class="user-info">
-          <div class="user-email" id="settings-user-email">—</div>
-          <div class="user-role" id="t-authenticated-user">Authenticated user</div>
-        </div>
-        <button class="btn-sm btn-danger" onclick="doLogout()" id="t-sign-out-btn">Sign Out</button>
-      </div>
-
-      <div id="biometric-settings" style="margin-top:10px;display:none">
-        <button class="btn-sm btn-navy" onclick="setupBiometric()" id="t-biometric-setup" style="width:100%;padding:11px">Enable Face ID / Fingerprint</button>
-      </div>
-      <div id="biometric-remove-container" style="margin-top:8px;display:none">
-        <button class="btn-sm btn-danger" onclick="removeBiometric()" id="t-biometric-remove" style="width:100%;padding:11px">Remove biometric login</button>
-      </div>
-    </div>
   </div>
 
-  <!-- BOTTOM NAVIGATION -->
+    <!-- BOTTOM NAVIGATION -->
   <div class="bottom-nav">
     <button class="nav-item active" id="nav-projects" onclick="showPage('projects')">
       <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
@@ -3615,6 +3631,26 @@ async function importProjectsFromExcel(input) {
     progress.textContent = 'Error: ' + e.message;
     showToast('Import failed', 'error');
   }
+}
+
+
+function filterProjects(query) {
+  const q = query.toLowerCase().trim();
+  const cards = document.querySelectorAll('#projects-list .project-card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+}
+
+
+function showSettingsTab(tab) {
+  document.getElementById('settings-tab-user').style.display = tab === 'user' ? '' : 'none';
+  document.getElementById('settings-tab-project').style.display = tab === 'project' ? '' : 'none';
+  document.getElementById('stab-user').style.background = tab === 'user' ? 'var(--navy)' : 'transparent';
+  document.getElementById('stab-user').style.color = tab === 'user' ? 'white' : 'var(--gray-dark)';
+  document.getElementById('stab-project').style.background = tab === 'project' ? 'var(--navy)' : 'transparent';
+  document.getElementById('stab-project').style.color = tab === 'project' ? 'white' : 'var(--gray-dark)';
 }
 
 // ============================================================
