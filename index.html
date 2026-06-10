@@ -1951,6 +1951,11 @@ function startNewHSE(origin) {
   showPage('hse-form');
 }
 
+function openHSE_go(planId) {
+  hseOrigin = 'qhse';
+  openHSE(planId);
+}
+
 async function openHSE(planId) {
   const { data, error } = await _sb.from('hse_plans').select('*').eq('id', planId).single();
   if (error || !data) return;
@@ -3232,7 +3237,7 @@ async function loadQHSEExisting() {
 
 async function goToQHSESection() {
   if (!currentProject) { showToast('Select a project first', 'error'); return; }
-  if (selectedQHSEType === 'hse') { startNewHSE('qhse'); }
+  if (selectedQHSEType === 'hse') { hseOrigin = 'qhse'; startNewHSE('qhse'); }
   else if (selectedQHSEType === 'toolbox') { openNewToolboxModal(); }
   else if (selectedQHSEType === 'incidents') { openIncidentModal(); }
 }
@@ -3272,7 +3277,26 @@ async function loadToolboxList() {
 function openNewToolboxModal() {
   document.getElementById('tb-date').value = new Date().toISOString().slice(0,16);
   document.getElementById('tb-topic').value = '';
-  document.getElementById('tb-location').value = '';
+  document.getElementById('tb-location').value = localStorage.getItem('tb_last_location') || '';
+  // Add datalist for topic suggestions
+  let topics = JSON.parse(localStorage.getItem('tb_topics') || '[]');
+  let topicList = document.getElementById('tb-topic-list');
+  if (!topicList) {
+    topicList = document.createElement('datalist');
+    topicList.id = 'tb-topic-list';
+    document.body.appendChild(topicList);
+    document.getElementById('tb-topic').setAttribute('list', 'tb-topic-list');
+  }
+  topicList.innerHTML = topics.map(t => '<option value="' + t + '">').join('');
+  let locList = document.getElementById('tb-loc-list');
+  if (!locList) {
+    locList = document.createElement('datalist');
+    locList.id = 'tb-loc-list';
+    document.body.appendChild(locList);
+    document.getElementById('tb-location').setAttribute('list', 'tb-loc-list');
+  }
+  let locs = JSON.parse(localStorage.getItem('tb_locations') || '[]');
+  locList.innerHTML = locs.map(l => '<option value="' + l + '">').join('');
   document.getElementById('tb-foreman').value = getMyName();
   document.getElementById('tb-attendees').value = '';
   document.getElementById('tb-actions').value = '';
@@ -3643,6 +3667,26 @@ function filterProjects(query) {
   });
 }
 
+
+
+function toggleTBRisk(label) {
+  const cb = label.querySelector('input[type="checkbox"]');
+  const box = label.querySelector('.tb-check-box');
+  cb.checked = !cb.checked;
+  if (cb.checked) {
+    label.style.borderColor = 'var(--navy)';
+    label.style.background = 'var(--off-white)';
+    box.style.background = 'var(--navy)';
+    box.style.borderColor = 'var(--navy)';
+    box.innerHTML = '<svg width="13" height="13" fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+  } else {
+    label.style.borderColor = 'var(--gray-light)';
+    label.style.background = 'var(--white)';
+    box.style.background = 'transparent';
+    box.style.borderColor = 'var(--gray-light)';
+    box.innerHTML = '';
+  }
+}
 
 function showSettingsTab(tab) {
   document.getElementById('settings-tab-user').style.display = tab === 'user' ? '' : 'none';
