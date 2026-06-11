@@ -3170,18 +3170,48 @@ async function selectQHSEType(type) {
   if (icon2) { icon2.style.background = cfg.color; icon2.innerHTML = cfg.svg; }
   if (label2) label2.textContent = cfg.label[currentLang] || cfg.label.en;
 
-  // Load projects
+  // Load projects with favourites first
   const sel = document.getElementById('qhse-project-select');
   sel.innerHTML = '<option value="">— Select project —</option>';
   try {
     const { data } = await _sb.from('projects').select('id,project_no,name').eq('closed', false).order('project_no', {ascending:true});
-    if (data) data.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = '#' + p.project_no + ' – ' + (p.name || '');
-      if (currentProject && currentProject.id === p.id) opt.selected = true;
-      sel.appendChild(opt);
-    });
+    if (data) {
+      const favs = JSON.parse(localStorage.getItem('fav_projects') || '[]');
+      const favProjects = data.filter(p => favs.includes(p.id));
+      const otherProjects = data.filter(p => !favs.includes(p.id));
+
+      if (favProjects.length > 0) {
+        const favGroup = document.createElement('optgroup');
+        favGroup.label = '⭐ Favourites';
+        favProjects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = '#' + p.project_no + ' – ' + (p.name || '');
+          if (currentProject && currentProject.id === p.id) opt.selected = true;
+          favGroup.appendChild(opt);
+        });
+        sel.appendChild(favGroup);
+
+        const allGroup = document.createElement('optgroup');
+        allGroup.label = 'All Projects';
+        otherProjects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = '#' + p.project_no + ' – ' + (p.name || '');
+          if (currentProject && currentProject.id === p.id) opt.selected = true;
+          allGroup.appendChild(opt);
+        });
+        sel.appendChild(allGroup);
+      } else {
+        data.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = '#' + p.project_no + ' – ' + (p.name || '');
+          if (currentProject && currentProject.id === p.id) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      }
+    }
     if (currentProject) { sel.value = currentProject.id; loadQHSEExisting(); }
   } catch(e) {}
 }
